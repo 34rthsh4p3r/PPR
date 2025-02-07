@@ -81,18 +81,18 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
 2.  **Build the Executable:**
 
     ```bash
-    pyinstaller --onefile --noconsole --add-data="PPR_logo.ico;." --icon=PPR_logo.ico PPR.py
+    pyinstaller --onefile --noconsole --add-data="PPR.ico;." --icon=PPR.ico PPR.py
     ```
     *   `--onefile`: Creates a single executable file.
     *   `--noconsole`: Prevents a console window from appearing.
-    *   `--add-data="PPR_logo.ico;."`: Includes the icon file in the executable. The `.` specifies the root directory within the executable.
-    *   `--icon=PPR_logo.ico`: set the icon to the application
+    *   `--add-data="PPR.ico;."`: Includes the icon file in the executable. The `.` specifies the root directory within the executable.
+    *   `--icon=PPR.ico`: set the icon to the application
 
 3.  **Find the Executable:** The .exe file will be created in the `dist` folder within the project directory.
 
 ## Troubleshooting
 
-*   **`FileNotFoundError: [Errno 2] No such file or directory: 'PPR_logo.ico'`:** Ensure `PPR_logo.ico` is in the same directory as `PPR.py` (or the executable).  If using PyInstaller, verify the `--add-data` option.
+*   **`FileNotFoundError: [Errno 2] No such file or directory: 'PPR.ico'`:** Ensure `PPR.ico` is in the same directory as `PPR.py` (or the executable).  If using PyInstaller, verify the `--add-data` option.
 *   **`ModuleNotFoundError: No module named 'pandas'` (or similar):**  Install the missing library using `pip install <module_name>`.
 *   If you encounter any other issues, please [open an issue](https://github.com/34rthsh4p3r/PPR/issues) on the GitHub repository.  Provide a detailed description of the problem, including the steps to reproduce it, your operating system, and the Python version you are using.
 
