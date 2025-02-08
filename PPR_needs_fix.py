@@ -75,7 +75,7 @@ class PaleoProfileRandomizer:
       # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 7 February 2025",  fg="white")
+        version_label = tk.Label(self.bottom_frame, text="Updated on 8 February 2025",  fg="white")
         version_label.pack(side=tk.TOP, expand=True)
 
         # Create a clickable link label for "34rthsh4p3r"
