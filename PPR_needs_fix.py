@@ -196,6 +196,7 @@ class PaleoProfileRandomizer:
                     zone_num = z
                     break
 
+
             ranges = self.get_parameter_ranges(base_type, env_type, zone_num)
 
             row = {
@@ -352,6 +353,7 @@ class PaleoProfileRandomizer:
         """Defines parameter ranges based on base type, environment, and zone."""
         ranges = {}
 
+
         if zone_num == 5:  # Base type only applies to zone 5
             if base_type == "Rock":
                 ranges = {
@@ -453,8 +455,7 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 }
-        else:  # Zones 1-4, influenced by env_type
-            ranges = {} # Initialize ranges
+        # Zones 1-4, influenced by env_type
         if env_type == "Lake":
             if zone_num == 4:
                 ranges.update({
@@ -582,8 +583,8 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 })
-        elif zone_num == 3:
-            ranges.update({
+            elif zone_num == 3:
+              ranges.update({
                 "OM": (10, 30, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
@@ -607,8 +608,8 @@ class PaleoProfileRandomizer:
                 "Na": (200, 300, "stagnant"),
                 "K": (200, 300, "stagnant")
             })
-        elif zone_num == 2:
-            ranges.update({
+            elif zone_num == 2:
+              ranges.update({
                 "OM": (80, 99, "stagnant"),
                 "IM": (1, 10, "sporadic_up_down"),
                 "CC": (1, 5, "sporadic_up_down"),
@@ -632,8 +633,8 @@ class PaleoProfileRandomizer:
                 "Na": (500, 600, "stagnant"),
                 "K": (500, 600, "stagnant")
             })
-        elif zone_num == 1:
-            ranges.update({
+            elif zone_num == 1:
+              ranges.update({
                 "OM": (5, 15, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
@@ -758,6 +759,7 @@ class PaleoProfileRandomizer:
                     "Na": (800, 900, "stagnant"),
                     "K": (800, 900, "stagnant")
                 })
+
         return ranges
 
     def display_table(self, data):
