@@ -13,11 +13,13 @@ class PaleoProfileRandomizer:
     def __init__(self, master):
         self.master = master
         master.title("PPR - Paleo Profile Randomizer")
-        master.state('zoomed')  # Start in full-screen mode
+        width = master.winfo_screenwidth()
+        height = master.winfo_screenheight()
+        master.geometry("%dx%d" % (width, height))
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
@@ -27,7 +29,7 @@ class PaleoProfileRandomizer:
         # --- Header Frame ---
         self.header_frame = tk.Frame(master)
         self.header_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
-        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="black", font=("Arial", 16, "bold"))
+        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="white", font=("Arial", 16, "bold"))
         title_label.pack(side=tk.TOP, expand=True)
 
         # --- Input Frame ---
@@ -73,13 +75,13 @@ class PaleoProfileRandomizer:
       # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 7 February 2025",  fg="black")
+        version_label = tk.Label(self.bottom_frame, text="Updated on 8 February 2025",  fg="white")
         version_label.pack(side=tk.TOP, expand=True)
 
         # Create a clickable link label for "34rthsh4p3r"
         link_label = tk.Label(self.bottom_frame, text="34rthsh4p3r", fg="blue", cursor="hand2")
         link_label.pack(side=tk.TOP)
-        link_label.bind("<Button-1>", lambda e: self.open_url("https://github.com/34rthsh4p3r"))
+        link_label.bind("<Button-1>", lambda e: self.open_url("https://github.com/34rthsh4p3r/PPR"))
 
         # --- Configure Row Weights ---
         master.rowconfigure(3, weight=1)  # Output frame should expand vertically
@@ -99,7 +101,7 @@ class PaleoProfileRandomizer:
         self.input_container.pack(expand=True) # Key: Center the container
 
         # --- Depth Selection ---
-        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="black")
+        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="white")
         depth_label.grid(row=0, column=0, sticky="ew")  # Stretch label
         self.input_container.columnconfigure(0, weight=1) # Allow label column to expand
 
@@ -120,7 +122,7 @@ class PaleoProfileRandomizer:
 
 
         # --- Base Type Selection ---
-        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="black")
+        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="white")
         base_label.grid(row=2, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -142,7 +144,7 @@ class PaleoProfileRandomizer:
 
 
         # --- Environment Type Selection ---
-        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="black")
+        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="white")
         env_label.grid(row=4, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -195,6 +197,7 @@ class PaleoProfileRandomizer:
                 if start <= d <= end:
                     zone_num = z
                     break
+
 
             ranges = self.get_parameter_ranges(base_type, env_type, zone_num)
 
@@ -352,6 +355,7 @@ class PaleoProfileRandomizer:
         """Defines parameter ranges based on base type, environment, and zone."""
         ranges = {}
 
+
         if zone_num == 5:  # Base type only applies to zone 5
             if base_type == "Rock":
                 ranges = {
@@ -453,8 +457,7 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 }
-        else:  # Zones 1-4, influenced by env_type
-            ranges = {} # Initialize ranges
+        # Zones 1-4, influenced by env_type
         if env_type == "Lake":
             if zone_num == 4:
                 ranges.update({
@@ -582,8 +585,8 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 })
-        elif zone_num == 3:
-            ranges.update({
+            elif zone_num == 3:
+              ranges.update({
                 "OM": (10, 30, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
@@ -607,8 +610,8 @@ class PaleoProfileRandomizer:
                 "Na": (200, 300, "stagnant"),
                 "K": (200, 300, "stagnant")
             })
-        elif zone_num == 2:
-            ranges.update({
+            elif zone_num == 2:
+              ranges.update({
                 "OM": (80, 99, "stagnant"),
                 "IM": (1, 10, "sporadic_up_down"),
                 "CC": (1, 5, "sporadic_up_down"),
@@ -632,8 +635,8 @@ class PaleoProfileRandomizer:
                 "Na": (500, 600, "stagnant"),
                 "K": (500, 600, "stagnant")
             })
-        elif zone_num == 1:
-            ranges.update({
+            elif zone_num == 1:
+              ranges.update({
                 "OM": (5, 15, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
@@ -758,6 +761,7 @@ class PaleoProfileRandomizer:
                     "Na": (800, 900, "stagnant"),
                     "K": (800, 900, "stagnant")
                 })
+
         return ranges
 
     def display_table(self, data):
@@ -768,7 +772,7 @@ class PaleoProfileRandomizer:
             widget.destroy()
 
         if not data:
-            no_data_label = tk.Label(self.table_frame, text="No data to display.", fg="black")  # Removed bg color
+            no_data_label = tk.Label(self.table_frame, text="No data to display.", fg="white")  # Removed bg color
             no_data_label.pack()
             return
 
@@ -776,7 +780,7 @@ class PaleoProfileRandomizer:
         headers = list(data[0].keys())
         for j, header in enumerate(headers):
                 label = tk.Label(self.table_frame, text=header, relief="solid", borderwidth=1,
-                             fg="black", padx=5, pady=5, font=("Arial", 10, "bold"))  # Removed bg color
+                             fg="white", padx=5, pady=5, font=("Arial", 10, "bold"))  # Removed bg color
                 label.grid(row=0, column=j, sticky="ew")
 
         # --- Populate Table with Data ---
@@ -784,7 +788,7 @@ class PaleoProfileRandomizer:
             for j, header in enumerate(headers):
                  value = row_data[header]
                  label = tk.Label(self.table_frame, text=str(value), relief="solid", borderwidth=1,
-                                  fg="black", padx=5, pady=5, font=("Arial", 10))  # Removed bg color
+                                  fg="white", padx=5, pady=5, font=("Arial", 10))  # Removed bg color
                  label.grid(row=i + 1, column=j, sticky="ew")
 
          # --- Configure Column Weights (for resizing) ---

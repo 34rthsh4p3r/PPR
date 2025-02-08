@@ -13,11 +13,11 @@ class PaleoProfileRandomizer:
     def __init__(self, master):
         self.master = master
         master.title("PPR - Paleo Profile Randomizer")
-        master.state('zoomed')  # Start in full-screen mode
+        master.state('normal')  # Start in full-screen mode
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'C:/Users/varit/.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  

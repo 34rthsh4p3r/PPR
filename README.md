@@ -43,8 +43,9 @@ Data generation is not purely random.  Values follow trends (increasing, decreas
 2.  **Libraries:** Install the required libraries using pip:
 
     ```bash
-    pip install tk pillow pandas
+    pip install tk pillow pandas matplotlib
     ```
+    note: if you are on linux you might need to install python3-tk (ubuntu)
 
 ### Installation and Usage
 
