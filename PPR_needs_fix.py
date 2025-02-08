@@ -13,7 +13,9 @@ class PaleoProfileRandomizer:
     def __init__(self, master):
         self.master = master
         master.title("PPR - Paleo Profile Randomizer")
-        master.state('normal')  # Start in full-screen mode
+        width = master.winfo_screenwidth()
+        height = master.winfo_screenheight()
+        master.geometry("%dx%d" % (width, height))
 
         # --- Load and Display Icon ---
         try:
