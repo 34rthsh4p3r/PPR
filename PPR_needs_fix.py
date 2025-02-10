@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 import matplotlib.pyplot as plt
+from openpyxl import Workbook #For Excel saving
 
 
 class PaleoProfileRandomizer:
@@ -19,7 +20,7 @@ class PaleoProfileRandomizer:
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
@@ -29,7 +30,7 @@ class PaleoProfileRandomizer:
         # --- Header Frame ---
         self.header_frame = tk.Frame(master)
         self.header_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
-        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="white", font=("Arial", 16, "bold"))
+        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="black", font=("Open Sans", 16, "bold"))
         title_label.pack(side=tk.TOP, expand=True)
 
         # --- Input Frame ---
@@ -40,11 +41,19 @@ class PaleoProfileRandomizer:
         # --- Button Frame ---
         self.button_frame = tk.Frame(master)
         self.button_frame.grid(row=2, column=0, columnspan=3, pady=10)
+       
+        # --- Generate Profile Button ---
         self.generate_button = ttk.Button(self.button_frame, text="Generate Profile", command=self.generate_profile)
         self.generate_button.pack(side=tk.LEFT, padx=5)
-        self.save_button = ttk.Button(self.button_frame, text="Save to .csv", command=self.save_data_to_csv)
-        self.save_button.pack(side=tk.LEFT, padx=5)
-        self.save_button.pack_forget()
+       
+        # --- Save Buttons ---
+        self.save_csv_button = ttk.Button(self.button_frame, text="Save to .csv", command=self.save_data_to_csv)
+        self.save_csv_button.pack(side=tk.LEFT, padx=5)
+
+        self.save_xlsx_button = ttk.Button(self.button_frame, text="Save to .xlsx", command=self.save_data_to_xlsx)
+        self.save_xlsx_button.pack(side=tk.LEFT, padx=5)
+       
+        # --- Exit Button ---
         self.exit_button = ttk.Button(self.button_frame, text="Exit", command=master.destroy)
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
@@ -72,10 +81,10 @@ class PaleoProfileRandomizer:
         self.table_frame.bind("<Configure>", self.on_frame_configure)
 
 
-      # --- Bottom Frame (for version info) ---
+        # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 8 February 2025",  fg="white")
+        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black")
         version_label.pack(side=tk.TOP, expand=True)
 
         # Create a clickable link label for "34rthsh4p3r"
@@ -101,7 +110,7 @@ class PaleoProfileRandomizer:
         self.input_container.pack(expand=True) # Key: Center the container
 
         # --- Depth Selection ---
-        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="white")
+        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="black")
         depth_label.grid(row=0, column=0, sticky="ew")  # Stretch label
         self.input_container.columnconfigure(0, weight=1) # Allow label column to expand
 
@@ -122,7 +131,7 @@ class PaleoProfileRandomizer:
 
 
         # --- Base Type Selection ---
-        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="white")
+        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="black")
         base_label.grid(row=2, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -144,7 +153,7 @@ class PaleoProfileRandomizer:
 
 
         # --- Environment Type Selection ---
-        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="white")
+        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="black")
         env_label.grid(row=4, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -167,7 +176,7 @@ class PaleoProfileRandomizer:
     def generate_unique_zone_percentages(self):
         """Generates 5 unique random numbers that sum to 100."""
         while True:
-            nums = [random.randint(10, 60) for _ in range(4)]
+            nums = [random.uniform(10, 60) for _ in range(4)]
             if len(set(nums)) == 4:
                 remaining = 100 - sum(nums)
                 if 10 <= remaining <= 60:
@@ -181,8 +190,8 @@ class PaleoProfileRandomizer:
         current_depth = 0
         for i, percentage in enumerate(zone_percentages):
             zone_end = current_depth + (depth * percentage / 100)
-            zones[i + 1] = (current_depth, int(round(zone_end / 2) * 2))
-            current_depth = int(round(zone_end / 2) * 2)
+            zones[i + 1] = (current_depth, float(round(zone_end / 2) * 2))
+            current_depth = float(round(zone_end / 2) * 2)
         return zones
 
     def generate_data(self, depth, zones, base_type, env_type):
@@ -236,70 +245,92 @@ class PaleoProfileRandomizer:
         normalized_depth = d / depth if depth > 0 else 0
 
         if trend == "stagnant":
-            return random.randint(min_val, max_val)
+            midpoint = (min_val + max_val) / 2
+            fluctuation = (max_val - min_val) / 10  # Adjust as needed
+            result = round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
+            return result
+
         elif trend == "increasing":
-            return int(min_val + (max_val - min_val) * normalized_depth)
+            return round(random.uniform(min_val + (max_val - min_val) * 0.75, max_val), 2)
+
         elif trend == "decreasing":
-            return int(max_val - (max_val - min_val) * normalized_depth)
+            return round(random.uniform(min_val, min_val + (max_val - min_val) * 0.25), 2)
+
+        elif trend == "increasing with breaks":
+            # 80% chance of increase, 20% chance of a dip
+            if random.random() < 0.8:
+                return round(random.uniform(min_val + (max_val - min_val) * 0.6, max_val), 2) #smaller range than a regular increase
+            else:
+                return round(random.uniform(min_val, min_val + (max_val-min_val) * 0.4), 2) # Simulates the "break" or dip.
+
+        elif trend == "decreasing then stagnant":
+            if random.random() < 0.6:  # 60% chance of decreasing
+                return round(random.uniform(min_val, min_val + (max_val - min_val) * 0.4), 2)
+            else:  # 40% chance of becoming stagnant
+                midpoint = (min_val + max_val) / 2
+                fluctuation = (max_val - min_val) / 20  # Smaller fluctuation for stagnant
+                return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
+
+        elif trend == "increasing then stagnant":
+            if random.random() < 0.6:  # 60% chance of increasing
+                return round(random.uniform(min_val + (max_val - min_val) * 0.6, max_val), 2)
+            else:  # 40% chance of becoming stagnant
+                midpoint = (min_val + max_val) / 2
+                fluctuation = (max_val - min_val) / 20  # Smaller fluctuation for stagnant
+                return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
+
+        elif trend == "sporadic up and down":
+            midpoint = (min_val + max_val) / 2
+            fluctuation = (max_val - min_val) / 4  # Larger fluctuation
+            return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
+
+        elif trend == "increasing then decreasing":
+            if random.random() < 0.5: # 50% chance to be in the increasing part
+                return round(random.uniform(min_val, (min_val + max_val) / 2 ), 2)
+            else: # 50% chance to be in the decreasing part.
+                return round(random.uniform((min_val + max_val) / 2, max_val), 2)
+        
         elif trend == "sporadic":
             if random.random() < 0.2:
-                return random.randint(min_val, max_val)
+                return round(random.uniform(min_val, max_val), 2)
             else:
-                return 0
+                return round((0),2)
+       
         elif trend == "increasing_then_stagnant":
             if normalized_depth <= 0.5:
-                return int(min_val + (max_val - min_val) * (normalized_depth * 2))
+                return round(float(min_val + (max_val - min_val) * (normalized_depth * 2)),2)
             else:
-                return random.randint(int(max_val * 0.95), int(max_val * 1.05))
+                return round(random.uniform(float(max_val * 0.95), float(max_val * 1.05)),2)
 
         elif trend == "decreasing_then_stagnant":
             if normalized_depth <= 0.5:
-                return int(max_val - (max_val - min_val) * (normalized_depth * 2))
+                return round(float(max_val - (max_val - min_val) * (normalized_depth * 2)),2)
             else:
-                return random.randint(int(min_val * 0.95), int(min_val * 1.05))
+                return round(random.uniform(float(min_val * 0.95), float(min_val * 1.05)),2)
         elif trend == "sporadic_up_down":
-            base_value = random.randint(min_val, max_val)
+            base_value = random.uniform(min_val, max_val)
             if random.random() < 0.3:
-                deviation = random.randint(int(0.3 * (max_val - min_val)), int(0.7 * (max_val - min_val)))
+                deviation = random.uniform(float(0.3 * (max_val - min_val)), float(0.7 * (max_val - min_val)))
                 if random.choice([True, False]):
                     base_value += deviation
                 else:
                     base_value -= deviation
                 base_value = max(min_val, min(base_value, max_val))
-            return base_value
-        elif trend == "follow_Pisidium":
-            # Use the 'data' passed as an argument (the local data list)
-            pisidium_values = [row['Pisidium'] for row in data if row['Depth'] == d]
-            if pisidium_values:
-                pisidium_value = pisidium_values[0]
-                range_width = max_val - min_val
-                min_follow = max(min_val, pisidium_value - range_width // 4)
-                max_follow = min(max_val, pisidium_value + range_width // 4)
-                return random.randint(min_follow, max_follow)
-            else:
-                return random.randint(min_val, max_val)
-
-        elif trend == "increasing_with_breaks":
-            base_value = int(min_val + (max_val - min_val) * normalized_depth)
-            if random.random() < 0.2:
-                drop_amount = random.randint(int(0.2 * (max_val - min_val)), int(0.5 * (max_val - min_val)))
-                return max(min_val, base_value - drop_amount)
-            else:
-                return base_value
-
+            return round((base_value),2)
+        
         elif trend == "increasing_then_decreasing":
             midpoint = (zones[zone_num][0] + zones[zone_num][1]) / 2
             if d <= midpoint:
                 normalized_zone_depth = (d - zones[zone_num][0]) / (midpoint - zones[zone_num][0]) if (midpoint -
                                                                                                        zones[zone_num][
                                                                                                            0]) > 0 else 0
-                return int(min_val + (max_val - min_val) * normalized_zone_depth)
+                return round(float(min_val + (max_val - min_val) * normalized_zone_depth),2)
             else:
                 normalized_zone_depth = (d - midpoint) / (zones[zone_num][1] - midpoint) if (zones[zone_num][
                                                                                                  1] - midpoint) > 0 else 0
-                return int(max_val - (max_val - min_val) * normalized_zone_depth)
+                return round(float(max_val - (max_val - min_val) * normalized_zone_depth),2)
         else:
-            return random.randint(min_val, max_val)
+            return round(random.uniform(min_val, max_val),2)
 
     def generate_profile(self):
         """Generates the paleo profile based on user selections."""
@@ -333,22 +364,68 @@ class PaleoProfileRandomizer:
         # --- Display Data ---
         self.display_table(self.data)
 
-        # --- Show Save Button ---
-        self.save_button.pack(side=tk.LEFT, padx=5)
-
     def generate_sum_to_100(self, min1, max1, trend1, min2, max2, trend2, min3, max3, trend3, d, depth):
-        """Generates three values that sum to 100, with trends."""
-        v1 = self.generate_value(d, depth, min1, max1, trend1, "", 0, {}, [])  # Pass empty data list
-        v2 = self.generate_value(d, depth, min2, max2, trend2, "", 0, {}, [])
-        v3 = self.generate_value(d, depth, min3, max3, trend3, "", 0, {}, [])
-
-        total = v1 + v2 + v3
-        if total == 0:
-            return 0, 0, 0
-        v1 = int(v1 / total * 100)
-        v2 = int(v2 / total * 100)
-        v3 = 100 - v1 - v2
-
+        """
+        Generates three values that sum to 100 while respecting minimum and maximum bounds
+        and following specified trends. Returns values with 2 decimal places.
+        
+        Args:
+            min1, max1, trend1: Parameters for first value
+            min2, max2, trend2: Parameters for second value
+            min3, max3, trend3: Parameters for third value
+            d: Current depth
+            depth: Total depth
+            
+        Returns:
+            Tuple of three floats with 2 decimal places that sum to 100
+        """
+        max_attempts = 100
+        for _ in range(max_attempts):
+            # Generate initial values based on trends
+            v1 = self.generate_value(d, depth, min1, max1, trend1, "", 0, {}, [])
+            v2 = self.generate_value(d, depth, min2, max2, trend2, "", 0, {}, [])
+            v3 = self.generate_value(d, depth, min3, max3, trend3, "", 0, {}, [])
+            
+            # Handle case where all values are 0
+            if v1 + v2 + v3 == 0:
+                return 0.00, 0.00, 0.00
+                
+            # Calculate proportions that respect the relative magnitudes
+            total = v1 + v2 + v3
+            p1 = round((v1 / total) * 100, 2)
+            p2 = round((v2 / total) * 100, 2)
+            p3 = round(100 - p1 - p2, 2)
+            
+            # Verify all values are within their bounds
+            if (min1 <= p1 <= max1 and 
+                min2 <= p2 <= max2 and 
+                min3 <= p3 <= max3):
+                return p1, p2, p3
+        
+        # If we couldn't find valid values after max attempts,
+        # use a fallback approach to ensure values sum to 100
+        v1 = round(max(min1, min(max1, 33.33)), 2)
+        v2 = round(max(min2, min(max2, 33.33)), 2)
+        v3 = round(100 - v1 - v2, 2)
+        
+        # Adjust if v3 is out of bounds
+        if v3 < min3:
+            deficit = min3 - v3
+            if v1 > min1 + deficit/2 and v2 > min2 + deficit/2:
+                v1 = round(v1 - deficit/2, 2)
+                v2 = round(v2 - deficit/2, 2)
+                v3 = round(min3, 2)
+        elif v3 > max3:
+            excess = v3 - max3
+            v1 = round(v1 + excess/2, 2)
+            v2 = round(v2 + excess/2, 2)
+            v3 = round(max3, 2)
+            
+        # Final rounding to ensure exact sum of 100
+        v1 = round(v1, 2)
+        v2 = round(v2, 2)
+        v3 = round(100 - v1 - v2, 2)
+        
         return v1, v2, v3
 
     def get_parameter_ranges(self, base_type, env_type, zone_num):
@@ -376,7 +453,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (50, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (50, 230, "stagnant"),
                     "Ca": (270, 400, "stagnant"),
                     "Mg": (250, 330, "stagnant"),
                     "Na": (300, 400, "stagnant"),
@@ -401,7 +478,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (50, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (50, 230, "stagnant"),
                     "Ca": (70, 100, "stagnant"),
                     "Mg": (50, 90, "stagnant"),
                     "Na": (100, 150, "stagnant"),
@@ -426,7 +503,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (100, 200, "stagnant"),
                     "Mg": (100, 130, "stagnant"),
                     "Na": (100, 200, "stagnant"),
@@ -451,7 +528,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -475,10 +552,10 @@ class PaleoProfileRandomizer:
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
+                    "Valvata cristata": (0, 10, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -500,10 +577,10 @@ class PaleoProfileRandomizer:
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 3, "stagnant"),
                     "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (5, 30, "stagnant"),
+                    "Valvata cristata": (10, 30, "stagnant"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -525,10 +602,10 @@ class PaleoProfileRandomizer:
                     "Pediastrum": (20, 50, "increasing"),
                     "Charcoal": (0, 0, "stagnant"),
                     "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (5, 30, "stagnant"),
+                    "Valvata cristata": (10, 30, "stagnant"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (630, 1200, "stagnant"),
                     "Mg": (190, 230, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -550,10 +627,10 @@ class PaleoProfileRandomizer:
                     "Pediastrum": (30, 70, "increasing"),
                     "Charcoal": (30, 40, "sporadic"),
                     "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (5, 30, "stagnant"),
-                    "Vallonia costata": (70, 200, "increasing_with_breaks"),
+                    "Valvata cristata": (10, 30, "stagnant"),
+                    "Vallonia costata": (70, 200, "decreasing"),
                     "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (190, 240, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (400, 600, "stagnant"),
@@ -562,7 +639,7 @@ class PaleoProfileRandomizer:
         elif env_type == "Peatland":
             if zone_num == 4:
                 ranges.update({
-                    "OM": (5, 15, "stagnant"),
+                    "OM": (2, 15, "increasing"),
                     "IM": (40, 80, "stagnant"),
                     "CC": (5, 30, "stagnant"),
                     "MS": (100, 150, "stagnant"),
@@ -579,7 +656,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -604,7 +681,7 @@ class PaleoProfileRandomizer:
                 "Valvata cristata": (5, 30, "stagnant"),
                 "Vallonia costata": (0, 0, "stagnant"),
                 "Succinea putris": (0, 0, "stagnant"),
-                "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                "Planorbis planorbis": (70, 230, "stagnant"),
                 "Ca": (130, 200, "stagnant"),
                 "Mg": (90, 130, "stagnant"),
                 "Na": (200, 300, "stagnant"),
@@ -627,9 +704,9 @@ class PaleoProfileRandomizer:
                 "Charcoal": (0, 10, "sporadic"),
                 "Pisidium": (80, 130, "decreasing"),
                 "Valvata cristata": (15, 50, "increasing"),
-                "Vallonia costata": (30, 80, "stagnant"),
+                "Vallonia costata": (30, 80, "sporadic_up_down"),
                 "Succinea putris": (30, 80, "stagnant"),
-                "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                "Planorbis planorbis": (70, 230, "stagnant"),
                 "Ca": (630, 1200, "stagnant"),
                 "Mg": (190, 230, "stagnant"),
                 "Na": (500, 600, "stagnant"),
@@ -637,7 +714,7 @@ class PaleoProfileRandomizer:
             })
             elif zone_num == 1:
               ranges.update({
-                "OM": (5, 15, "sporadic_up_down"),
+                "OM": (5, 20, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
                 "MS": (150, 300, "increasing"),
@@ -652,9 +729,9 @@ class PaleoProfileRandomizer:
                 "Charcoal": (30, 40, "sporadic"),
                 "Pisidium": (90, 150, "stagnant"),
                 "Valvata cristata": (35, 80, "stagnant"),
-                "Vallonia costata": (170, 230, "increasing_with_breaks"),
+                "Vallonia costata": (170, 230, "decreasing"),
                 "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                "Planorbis planorbis": (70, 230, "stagnant"),
                 "Ca": (190, 240, "stagnant"),
                 "Mg": (90, 130, "stagnant"),
                 "Na": (600, 900, "stagnant"),
@@ -663,7 +740,7 @@ class PaleoProfileRandomizer:
         elif env_type == "Wetland":
             if zone_num == 4:
                 ranges.update({
-                    "OM": (5, 15, "stagnant"),
+                    "OM": (5, 20, "stagnant"),
                     "IM": (40, 80, "stagnant"),
                     "CC": (5, 30, "stagnant"),
                     "MS": (100, 150, "stagnant"),
@@ -680,7 +757,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -705,7 +782,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (15, 50, "increasing"),
                     "Vallonia costata": (30, 80, "stagnant"),
                     "Succinea putris": (30, 80, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (830, 1400, "stagnant"),
                     "Mg": (390, 530, "stagnant"),
                     "Na": (200, 300, "stagnant"),
@@ -730,7 +807,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (15, 50, "increasing"),
                     "Vallonia costata": (30, 80, "stagnant"),
                     "Succinea putris": (30, 80, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "follow_Pisidium"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (500, 600, "stagnant"),
@@ -755,7 +832,7 @@ class PaleoProfileRandomizer:
                     "Valvata cristata": (15, 70, "stagnant"),
                     "Vallonia costata": (100, 300, "stagnant"),
                     "Succinea putris": (100, 200, "stagnant"),
-                    "Planorbis planorbis": (170, 330, "follow_Pisidium"),
+                    "Planorbis planorbis": (170, 330, "stagnant"),
                     "Ca": (130, 250, "stagnant"),
                     "Mg": (90, 230, "stagnant"),
                     "Na": (800, 900, "stagnant"),
@@ -772,7 +849,7 @@ class PaleoProfileRandomizer:
             widget.destroy()
 
         if not data:
-            no_data_label = tk.Label(self.table_frame, text="No data to display.", fg="white")  # Removed bg color
+            no_data_label = tk.Label(self.table_frame, text="No data to display.", fg="black")  # Removed bg color
             no_data_label.pack()
             return
 
@@ -780,7 +857,7 @@ class PaleoProfileRandomizer:
         headers = list(data[0].keys())
         for j, header in enumerate(headers):
                 label = tk.Label(self.table_frame, text=header, relief="solid", borderwidth=1,
-                             fg="white", padx=5, pady=5, font=("Arial", 10, "bold"))  # Removed bg color
+                             fg="black", padx=5, pady=5, font=("Open Sans", 10, "bold"))  # Removed bg color
                 label.grid(row=0, column=j, sticky="ew")
 
         # --- Populate Table with Data ---
@@ -788,7 +865,7 @@ class PaleoProfileRandomizer:
             for j, header in enumerate(headers):
                  value = row_data[header]
                  label = tk.Label(self.table_frame, text=str(value), relief="solid", borderwidth=1,
-                                  fg="white", padx=5, pady=5, font=("Arial", 10))  # Removed bg color
+                                  fg="black", padx=5, pady=5, font=("Open Sans", 10))  # Removed bg color
                  label.grid(row=i + 1, column=j, sticky="ew")
 
          # --- Configure Column Weights (for resizing) ---
@@ -800,26 +877,43 @@ class PaleoProfileRandomizer:
         """Updates the scroll region of the canvas."""
         self.table_canvas.configure(scrollregion=self.table_canvas.bbox("all"))
 
-    def save_data_to_csv(self): #Removed the (self,data) argument
-      """Saves the generated data to a CSV file (using self.data)."""
+    def save_data_to_csv(self):  # Removed the (self,data) argument
+        """Saves the generated data to a CSV file (using self.data)."""
 
-      if not self.data:  # Use self.data
-          messagebox.showinfo("No Data", "No data to save.")
-          return
-      try:
-        file_path = filedialog.asksaveasfilename(
-            defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
-            title="Save Profile Data"
-        )
-        if file_path:
-            df = pd.DataFrame(self.data)  # Use self.data
-            df.to_csv(file_path, index=False)
-            messagebox.showinfo("File Saved", f"Data saved to {file_path}")
-            self.save_button.pack_forget() # Hide save button after saving
+        if not hasattr(self, 'data') or not self.data:  # Use self.data
+            messagebox.showinfo("No Data", "No data to save. Generate a profile first.")
+            return
+        try:
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".csv",
+                filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+                title="Save Profile Data"
+            )
+            if file_path:
+                df = pd.DataFrame(self.data)  # Use self.data
+                df.to_csv(file_path, index=False)
+                messagebox.showinfo("File Saved", f"Data saved to {file_path}")
+        except Exception as e:
+            messagebox.showerror("Error Saving File", f"An error occurred: {e}")
 
-      except Exception as e:
-        messagebox.showerror("Error Saving File", f"An error occurred: {e}")
+    def save_data_to_xlsx(self):
+        """Saves the generated data to an Excel (.xlsx) file."""
+        if not hasattr(self, 'data') or not self.data:
+            messagebox.showinfo("No Data", "No data to save. Generate a profile first.")
+            return
+
+        try:
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".xlsx",
+                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+                title="Save Profile Data"
+            )
+            if file_path:
+                df = pd.DataFrame(self.data)
+                df.to_excel(file_path, index=False, engine='openpyxl')  # Specify openpyxl
+                messagebox.showinfo("File Saved", f"Data saved to {file_path}")
+        except Exception as e:
+            messagebox.showerror("Error Saving File", f"An error occurred: {e}")
 # --- Main Program Execution ---
 if __name__ == "__main__":
     root = tk.Tk()
