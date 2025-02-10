@@ -20,8 +20,9 @@ The application generates data based on user-selected parameters:
     *   Grain size: Clay, Silt, Sand percentages
     *   Water-soluble geochemical concentrations: Ca, Mg, Na, K
     *   Charcoal abundances
-    *   Pollen abundances: Pinus, Quercus, Betula, Cerealia, Poeceae
-    *   Algae abundances: Pediastrum
+    *   Arboreal pollen (AP) abundances: Pinus, Quercus, Betula
+    *   Non arboreal pollen (NAP) abundances: Cerealia, Poeceae
+    *   Aquatic pollen (AQUA) abundances: Pediastrum
     *   Mollusc abundances: *Pisidium*, *Valvata cristata*, *Vallonia costata*, *Succinea putris*, *Planorbis planorbis*
 
 Data generation is not purely random.  Values follow trends (increasing, decreasing, stagnant, sporadic, etc.) that are typical of real-world paleoecological datasets, providing a more realistic simulation.  The generated data is displayed in a scrollable table within the application and can be exported as a CSV file.
