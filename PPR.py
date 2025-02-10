@@ -20,7 +20,7 @@ class PaleoProfileRandomizer:
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
@@ -79,7 +79,6 @@ class PaleoProfileRandomizer:
         self.h_scrollbar.config(command=self.table_canvas.xview)
         self.v_scrollbar.config(command=self.table_canvas.yview)
         self.table_frame.bind("<Configure>", self.on_frame_configure)
-
 
         # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
@@ -213,22 +212,35 @@ class PaleoProfileRandomizer:
             row = {
                 "Depth": d,
                 "Zone": zone_num,
-                "OM": 0, "CC": 0, "IM": 0, "MS": 0,
+                "OM": 0, "CC": 0, "IM": 0,
                 "Clay": 0, "Silt": 0, "Sand": 0,
             }
+            
+            all_params = ["MS", "Pinus", "Quercus", "Betula", "Cerealia", "Poaceae",
+                          "Pediastrum", "Charcoal", "Pisidium", "Valvata cristata",
+                          "Vallonia costata", "Succinea putris", "Planorbis planorbis",
+                          "Ca", "Mg", "Na", "K"]
 
-            for param, (min_val, max_val, trend) in ranges.items():
-                if param not in ("OM", "CC", "IM", "Clay", "Silt", "Sand"):
-                    # Pass 'data' (the local variable) to generate_value
+            for param in all_params:
+                if param in ranges:
+                    min_val, max_val, trend = ranges[param]
                     row[param] = self.generate_value(d, depth, min_val, max_val, trend, param, zone_num, zones, data)
+                else:
+                    row[param] = 0
 
-            row["OM"], row["CC"], row["IM"] = self.generate_sum_to_100(
-                ranges["OM"][0], ranges["OM"][1], ranges["OM"][2],
-                ranges["CC"][0], ranges["CC"][1], ranges["CC"][2],
-                ranges["IM"][0], ranges["IM"][1], ranges["IM"][2],
-                d, depth
+            if "OM" not in ranges:
+                row["OM"], row["CC"], row["IM"] = 0,0,0
+            else:
+                row["OM"], row["CC"], row["IM"] = self.generate_sum_to_100(
+                    ranges["OM"][0], ranges["OM"][1], ranges["OM"][2],
+                    ranges["CC"][0], ranges["CC"][1], ranges["CC"][2],
+                    ranges["IM"][0], ranges["IM"][1], ranges["IM"][2],
+                    d, depth
             )
-            row["Clay"], row["Silt"], row["Sand"] = self.generate_sum_to_100(
+            if "Clay" not in ranges:
+                row["Clay"], row["Silt"], row["Sand"] = 0,0,0
+            else:
+                row["Clay"], row["Silt"], row["Sand"] = self.generate_sum_to_100(
                 ranges["Clay"][0], ranges["Clay"][1], ranges["Clay"][2],
                 ranges["Silt"][0], ranges["Silt"][1], ranges["Silt"][2],
                 ranges["Sand"][0], ranges["Sand"][1], ranges["Sand"][2],
@@ -432,28 +444,28 @@ class PaleoProfileRandomizer:
         """Defines parameter ranges based on base type, environment, and zone."""
         ranges = {}
 
-
         if zone_num == 5:  # Base type only applies to zone 5
             if base_type == "Rock":
                 ranges = {
                     "OM": (0, 5, "increasing"),
                     "IM": (70, 95, "decreasing"),
                     "CC": (5, 30, "decreasing_then_stagnant"),
-                    "MS": (150, 250, "stagnant"),
                     "Clay": (0, 5, "stagnant"),
                     "Silt": (5, 15, "stagnant"),
                     "Sand": (70, 90, "stagnant"),
+                    "MS": (150, 250, "stagnant"),
                     "Pinus": (100, 150, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (0, 5, "stagnant"),
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (50, 230, "stagnant"),
+                    "Planorbis planorbis": (80, 100, "stagnant"),
                     "Ca": (270, 400, "stagnant"),
                     "Mg": (250, 330, "stagnant"),
                     "Na": (300, 400, "stagnant"),
@@ -464,21 +476,22 @@ class PaleoProfileRandomizer:
                     "OM": (0, 0, "stagnant"),
                     "IM": (70, 95, "stagnant"),
                     "CC": (5, 30, "stagnant"),
-                    "MS": (150, 200, "stagnant"),
                     "Clay": (0, 5, "stagnant"),
                     "Silt": (0, 10, "stagnant"),
                     "Sand": (85, 95, "stagnant"),
+                    "MS": (150, 200, "stagnant"),
                     "Pinus": (100, 150, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (0, 10, "stagnant"),
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (50, 230, "stagnant"),
+                    "Planorbis planorbis": (60, 200, "stagnant"),
                     "Ca": (70, 100, "stagnant"),
                     "Mg": (50, 90, "stagnant"),
                     "Na": (100, 150, "stagnant"),
@@ -489,21 +502,22 @@ class PaleoProfileRandomizer:
                     "OM": (15, 35, "stagnant"),
                     "IM": (40, 70, "decreasing"),
                     "CC": (5, 30, "decreasing_then_stagnant"),
-                    "MS": (100, 150, "stagnant"),
                     "Clay": (5, 20, "stagnant"),
                     "Silt": (5, 15, "stagnant"),
                     "Sand": (70, 90, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
                     "Pinus": (100, 150, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (30, 60, "stagnant"),
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Planorbis planorbis": (170, 230, "stagnant"),
                     "Ca": (100, 200, "stagnant"),
                     "Mg": (100, 130, "stagnant"),
                     "Na": (100, 200, "stagnant"),
@@ -514,41 +528,43 @@ class PaleoProfileRandomizer:
                     "OM": (5, 15, "stagnant"),
                     "IM": (40, 80, "stagnant"),
                     "CC": (5, 30, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
                     "Clay": (10, 20, "stagnant"),
                     "Silt": (10, 60, "stagnant"),
                     "Sand": (20, 40, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
                     "Pinus": (100, 150, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
+                    "Poaceae": (20, 50, "decreasing"),
+                    "Poaceae": (120, 150, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
                     "Valvata cristata": (0, 30, "sporadic"),
                     "Vallonia costata": (0, 0, "stagnant"),
                     "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Planorbis planorbis": (70, 200, "stagnant"),
                     "Ca": (130, 200, "stagnant"),
                     "Mg": (90, 130, "stagnant"),
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 }
         # Zones 1-4, influenced by env_type
-        if env_type == "Lake":
-            if zone_num == 4:
+        elif zone_num == 4:
+            if env_type == "Lake":
                 ranges.update({
                     "OM": (5, 15, "stagnant"),
                     "IM": (40, 80, "stagnant"),
                     "CC": (5, 30, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
                     "Clay": (10, 20, "stagnant"),
                     "Silt": (10, 60, "stagnant"),
                     "Sand": (20, 40, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
                     "Pinus": (100, 150, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (100, 120, "stagnant"),
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (70, 200, "stagnant"),
@@ -561,19 +577,74 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 })
-            elif zone_num == 3:
+            elif env_type == "Peatland":
+                ranges.update({
+                    "OM": (2, 15, "increasing"),
+                    "IM": (40, 80, "stagnant"),
+                    "CC": (5, 30, "stagnant"),
+                    "Clay": (10, 20, "stagnant"),
+                    "Silt": (10, 60, "stagnant"),
+                    "Sand": (20, 40, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
+                    "Pinus": (100, 150, "stagnant"),
+                    "Quercus": (0, 0, "stagnant"),
+                    "Betula": (0, 0, "stagnant"),
+                    "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (80, 120, "stagnant"),
+                    "Pediastrum": (0, 0, "stagnant"),
+                    "Charcoal": (0, 10, "sporadic"),
+                    "Pisidium": (70, 200, "stagnant"),
+                    "Valvata cristata": (0, 30, "sporadic"),
+                    "Vallonia costata": (0, 0, "stagnant"),
+                    "Succinea putris": (0, 0, "stagnant"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Ca": (130, 200, "stagnant"),
+                    "Mg": (90, 130, "stagnant"),
+                    "Na": (200, 300, "stagnant"),
+                    "K": (200, 300, "stagnant")
+                })
+            elif env_type == "Wetland":
+                ranges.update({
+                    "OM": (5, 20, "stagnant"),
+                    "IM": (40, 80, "stagnant"),
+                    "CC": (5, 30, "stagnant"),
+                    "Clay": (10, 20, "stagnant"),
+                    "Silt": (10, 60, "stagnant"),
+                    "Sand": (20, 40, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
+                    "Pinus": (100, 150, "stagnant"),
+                    "Quercus": (0, 0, "stagnant"),
+                    "Betula": (0, 0, "stagnant"),
+                    "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (80, 130, "stagnant"),
+                    "Pediastrum": (0, 0, "stagnant"),
+                    "Charcoal": (0, 10, "sporadic"),
+                    "Pisidium": (70, 200, "stagnant"),
+                    "Valvata cristata": (0, 30, "sporadic"),
+                    "Vallonia costata": (0, 0, "stagnant"),
+                    "Succinea putris": (0, 0, "stagnant"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Ca": (130, 200, "stagnant"),
+                    "Mg": (90, 130, "stagnant"),
+                    "Na": (200, 300, "stagnant"),
+                    "K": (200, 300, "stagnant")
+                })
+
+        elif zone_num == 3:
+            if env_type == "Lake":
                 ranges.update({
                     "OM": (5, 15, "sporadic_up_down"),
                     "IM": (40, 80, "sporadic_up_down"),
                     "CC": (5, 30, "sporadic_up_down"),
-                    "MS": (100, 150, "stagnant"),
                     "Clay": (5, 40, "stagnant"),
                     "Silt": (5, 60, "stagnant"),
                     "Sand": (5, 60, "stagnant"),
+                    "MS": (100, 150, "stagnant"),
                     "Pinus": (70, 120, "stagnant"),
                     "Quercus": (0, 0, "stagnant"),
                     "Betula": (0, 0, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (40, 90, "decreasing"),
                     "Pediastrum": (0, 0, "stagnant"),
                     "Charcoal": (0, 3, "stagnant"),
                     "Pisidium": (70, 100, "stagnant"),
@@ -586,95 +657,20 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 })
-            elif zone_num == 2:
-                ranges.update({
-                    "OM": (10, 20, "sporadic_up_down"),
-                    "IM": (40, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "MS": (50, 80, "stagnant"),
-                    "Clay": (5, 40, "stagnant"),
-                    "Silt": (5, 60, "stagnant"),
-                    "Sand": (5, 60, "stagnant"),
-                    "Pinus": (70, 120, "stagnant"),
-                    "Quercus": (140, 140, "stagnant"),
-                    "Betula": (60, 60, "stagnant"),
-                    "Cerealia": (0, 10, "increasing"),
-                    "Pediastrum": (20, 50, "increasing"),
-                    "Charcoal": (0, 0, "stagnant"),
-                    "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (10, 30, "stagnant"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (630, 1200, "stagnant"),
-                    "Mg": (190, 230, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
-                })
-            elif zone_num == 1:
-                ranges.update({
-                    "OM": (5, 15, "sporadic_up_down"),
-                    "IM": (40, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "MS": (150, 300, "increasing"),
-                    "Clay": (5, 40, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 60, "stagnant"),
-                    "Pinus": (30, 190, "stagnant"),
-                    "Quercus": (200, 350, "stagnant"),
-                    "Betula": (180, 240, "stagnant"),
-                    "Cerealia": (20, 90, "increasing"),
-                    "Pediastrum": (30, 70, "increasing"),
-                    "Charcoal": (30, 40, "sporadic"),
-                    "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (10, 30, "stagnant"),
-                    "Vallonia costata": (70, 200, "decreasing"),
-                    "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (190, 240, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (400, 600, "stagnant"),
-                    "K": (400, 500, "stagnant")
-                })
-        elif env_type == "Peatland":
-            if zone_num == 4:
-                ranges.update({
-                    "OM": (2, 15, "increasing"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
-                })
-            elif zone_num == 3:
+            elif env_type == "Peatland":
               ranges.update({
                 "OM": (10, 30, "sporadic_up_down"),
                 "IM": (40, 80, "sporadic_up_down"),
                 "CC": (5, 30, "sporadic_up_down"),
-                "MS": (100, 150, "stagnant"),
                 "Clay": (5, 40, "stagnant"),
                 "Silt": (5, 60, "stagnant"),
                 "Sand": (5, 60, "stagnant"),
+                "MS": (100, 150, "stagnant"),
                 "Pinus": (70, 120, "stagnant"),
                 "Quercus": (0, 0, "stagnant"),
                 "Betula": (0, 0, "stagnant"),
                 "Cerealia": (0, 0, "stagnant"),
+                "Poaceae": (60, 90, "stagnant"),
                 "Pediastrum": (0, 0, "stagnant"),
                 "Charcoal": (0, 3, "sporadic"),
                 "Pisidium": (70, 100, "stagnant"),
@@ -687,94 +683,19 @@ class PaleoProfileRandomizer:
                 "Na": (200, 300, "stagnant"),
                 "K": (200, 300, "stagnant")
             })
-            elif zone_num == 2:
-              ranges.update({
-                "OM": (80, 99, "stagnant"),
-                "IM": (1, 10, "sporadic_up_down"),
-                "CC": (1, 5, "sporadic_up_down"),
-                "MS": (20, 40, "stagnant"),
-                "Clay": (20, 60, "stagnant"),
-                "Silt": (20, 60, "stagnant"),
-                "Sand": (1, 5, "stagnant"),
-                "Pinus": (30, 90, "stagnant"),
-                "Quercus": (70, 140, "increasing"),
-                "Betula": (200, 360, "increasing"),
-                "Cerealia": (0, 0, "stagnant"),
-                "Pediastrum": (20, 50, "increasing"),
-                "Charcoal": (0, 10, "sporadic"),
-                "Pisidium": (80, 130, "decreasing"),
-                "Valvata cristata": (15, 50, "increasing"),
-                "Vallonia costata": (30, 80, "sporadic_up_down"),
-                "Succinea putris": (30, 80, "stagnant"),
-                "Planorbis planorbis": (70, 230, "stagnant"),
-                "Ca": (630, 1200, "stagnant"),
-                "Mg": (190, 230, "stagnant"),
-                "Na": (500, 600, "stagnant"),
-                "K": (500, 600, "stagnant")
-            })
-            elif zone_num == 1:
-              ranges.update({
-                "OM": (5, 20, "sporadic_up_down"),
-                "IM": (40, 80, "sporadic_up_down"),
-                "CC": (5, 30, "sporadic_up_down"),
-                "MS": (150, 300, "increasing"),
-                "Clay": (5, 40, "stagnant"),
-                "Silt": (10, 60, "stagnant"),
-                "Sand": (20, 60, "stagnant"),
-                "Pinus": (30, 190, "stagnant"),
-                "Quercus": (200, 350, "stagnant"),
-                "Betula": (180, 240, "stagnant"),
-                "Cerealia": (20, 90, "increasing"),
-                "Pediastrum": (30, 70, "increasing"),
-                "Charcoal": (30, 40, "sporadic"),
-                "Pisidium": (90, 150, "stagnant"),
-                "Valvata cristata": (35, 80, "stagnant"),
-                "Vallonia costata": (170, 230, "decreasing"),
-                "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                "Planorbis planorbis": (70, 230, "stagnant"),
-                "Ca": (190, 240, "stagnant"),
-                "Mg": (90, 130, "stagnant"),
-                "Na": (600, 900, "stagnant"),
-                "K": (600, 900, "stagnant")
-            })
-        elif env_type == "Wetland":
-            if zone_num == 4:
-                ranges.update({
-                    "OM": (5, 20, "stagnant"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
-                })
-            elif zone_num == 3:
+            elif env_type == "Wetland":
                 ranges.update({
                     "OM": (10, 30, "stagnant"),
                     "IM": (30, 70, "sporadic_up_down"),
                     "CC": (20, 40, "sporadic_up_down"),
-                    "MS": (40, 70, "stagnant"),
                     "Clay": (10, 40, "stagnant"),
                     "Silt": (20, 60, "stagnant"),
                     "Sand": (10, 50, "stagnant"),
+                    "MS": (40, 70, "stagnant"),
                     "Pinus": (30, 90, "stagnant"),
                     "Quercus": (70, 140, "increasing"),
                     "Betula": (200, 360, "increasing"),
+                    "Poaceae": (80, 110, "stagnant"),
                     "Cerealia": (0, 0, "stagnant"),
                     "Pediastrum": (20, 50, "increasing"),
                     "Charcoal": (0, 0, "sporadic"),
@@ -788,19 +709,74 @@ class PaleoProfileRandomizer:
                     "Na": (200, 300, "stagnant"),
                     "K": (200, 300, "stagnant")
                 })
-            elif zone_num == 2:
+
+        elif zone_num == 2:
+            if env_type == "Lake":
+                ranges.update({
+                    "OM": (10, 20, "sporadic_up_down"),
+                    "IM": (40, 80, "sporadic_up_down"),
+                    "CC": (5, 30, "sporadic_up_down"),
+                    "Clay": (5, 40, "stagnant"),
+                    "Silt": (5, 60, "stagnant"),
+                    "Sand": (5, 60, "stagnant"),
+                    "MS": (50, 80, "stagnant"),
+                    "Pinus": (70, 120, "stagnant"),
+                    "Quercus": (140, 140, "stagnant"),
+                    "Betula": (60, 60, "stagnant"),
+                    "Cerealia": (0, 10, "increasing"),
+                    "Poaceae": (30, 60, "decreasing"),
+                    "Pediastrum": (20, 50, "increasing"),
+                    "Charcoal": (0, 0, "stagnant"),
+                    "Pisidium": (70, 100, "stagnant"),
+                    "Valvata cristata": (10, 30, "stagnant"),
+                    "Vallonia costata": (0, 0, "stagnant"),
+                    "Succinea putris": (0, 0, "stagnant"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Ca": (630, 1200, "stagnant"),
+                    "Mg": (190, 230, "stagnant"),
+                    "Na": (200, 300, "stagnant"),
+                    "K": (200, 300, "stagnant")
+                })
+            elif env_type == "Peatland":
+              ranges.update({
+                "OM": (80, 99, "stagnant"),
+                "IM": (1, 10, "sporadic_up_down"),
+                "CC": (1, 5, "sporadic_up_down"),
+                "Clay": (20, 60, "stagnant"),
+                "Silt": (20, 60, "stagnant"),
+                "Sand": (1, 5, "stagnant"),
+                "MS": (20, 40, "stagnant"),
+                "Pinus": (30, 90, "stagnant"),
+                "Quercus": (70, 140, "increasing"),
+                "Betula": (200, 360, "increasing"),
+                "Cerealia": (0, 0, "stagnant"),
+                "Poaceae": (20, 50, "stagnant"),
+                "Pediastrum": (20, 50, "increasing"),
+                "Charcoal": (0, 10, "sporadic"),
+                "Pisidium": (80, 130, "decreasing"),
+                "Valvata cristata": (15, 50, "increasing"),
+                "Vallonia costata": (30, 80, "sporadic_up_down"),
+                "Succinea putris": (30, 80, "stagnant"),
+                "Planorbis planorbis": (70, 230, "stagnant"),
+                "Ca": (630, 1200, "stagnant"),
+                "Mg": (190, 230, "stagnant"),
+                "Na": (500, 600, "stagnant"),
+                "K": (500, 600, "stagnant")
+            })
+            elif env_type == "Wetland":
                 ranges.update({
                     "OM": (50, 90, "stagnant"),
                     "IM": (5, 30, "sporadic_up_down"),
                     "CC": (5, 15, "sporadic_up_down"),
-                    "MS": (120, 140, "increasing"),
                     "Clay": (20, 60, "stagnant"),
                     "Silt": (20, 60, "stagnant"),
                     "Sand": (1, 5, "stagnant"),
+                    "MS": (120, 140, "increasing"),
                     "Pinus": (30, 90, "stagnant"),
                     "Quercus": (70, 140, "increasing"),
                     "Betula": (200, 360, "increasing"),
                     "Cerealia": (0, 0, "stagnant"),
+                    "Poaceae": (30, 60, "decreasing"),
                     "Pediastrum": (20, 50, "increasing"),
                     "Charcoal": (0, 10, "sporadic"),
                     "Pisidium": (80, 130, "decreasing"),
@@ -813,19 +789,74 @@ class PaleoProfileRandomizer:
                     "Na": (500, 600, "stagnant"),
                     "K": (500, 600, "stagnant")
                 })
-            elif zone_num == 1:
+
+        elif zone_num == 1:
+            if env_type == "Lake":
+                ranges.update({
+                    "OM": (5, 15, "sporadic_up_down"),
+                    "IM": (40, 80, "sporadic_up_down"),
+                    "CC": (5, 30, "sporadic_up_down"),
+                    "Clay": (5, 40, "stagnant"),
+                    "Silt": (10, 60, "stagnant"),
+                    "Sand": (20, 60, "stagnant"),
+                    "MS": (150, 300, "increasing"),
+                    "Pinus": (30, 190, "stagnant"),
+                    "Quercus": (200, 350, "stagnant"),
+                    "Betula": (180, 240, "stagnant"),
+                    "Cerealia": (20, 90, "increasing"),
+                    "Poaceae": (20, 50, "decreasing"),
+                    "Pediastrum": (30, 70, "increasing"),
+                    "Charcoal": (30, 40, "sporadic"),
+                    "Pisidium": (70, 100, "stagnant"),
+                    "Valvata cristata": (10, 30, "stagnant"),
+                    "Vallonia costata": (70, 200, "decreasing"),
+                    "Succinea putris": (70, 100, "increasing_then_decreasing"),
+                    "Planorbis planorbis": (70, 230, "stagnant"),
+                    "Ca": (190, 240, "stagnant"),
+                    "Mg": (90, 130, "stagnant"),
+                    "Na": (400, 600, "stagnant"),
+                    "K": (400, 500, "stagnant")
+                })
+            elif env_type == "Peatland":
+              ranges.update({
+                "OM": (5, 20, "sporadic_up_down"),
+                "IM": (40, 80, "sporadic_up_down"),
+                "CC": (5, 30, "sporadic_up_down"),
+                "Clay": (5, 40, "stagnant"),
+                "Silt": (10, 60, "stagnant"),
+                "Sand": (20, 60, "stagnant"),
+                "MS": (150, 300, "increasing"),
+                "Pinus": (30, 190, "stagnant"),
+                "Quercus": (200, 350, "stagnant"),
+                "Betula": (180, 240, "stagnant"),
+                "Cerealia": (20, 90, "increasing"),
+                "Poaceae": (40, 90, "increasing"),
+                "Pediastrum": (30, 70, "increasing"),
+                "Charcoal": (30, 40, "sporadic"),
+                "Pisidium": (90, 150, "stagnant"),
+                "Valvata cristata": (35, 80, "stagnant"),
+                "Vallonia costata": (170, 230, "decreasing"),
+                "Succinea putris": (70, 100, "increasing_then_decreasing"),
+                "Planorbis planorbis": (70, 230, "stagnant"),
+                "Ca": (190, 240, "stagnant"),
+                "Mg": (90, 130, "stagnant"),
+                "Na": (600, 900, "stagnant"),
+                "K": (600, 900, "stagnant")
+            })
+            elif env_type == "Wetland":
                 ranges.update({
                     "OM": (10, 70, "sporadic_up_down"),
                     "IM": (10, 80, "sporadic_up_down"),
                     "CC": (5, 30, "sporadic_up_down"),
-                    "MS": (400, 700, "stagnant"),
                     "Clay": (5, 20, "stagnant"),
                     "Silt": (30, 60, "stagnant"),
                     "Sand": (40, 70, "stagnant"),
+                    "MS": (400, 700, "stagnant"),
                     "Pinus": (50, 100, "stagnant"),
                     "Quercus": (100, 200, "stagnant"),
                     "Betula": (100, 200, "stagnant"),
                     "Cerealia": (300, 400, "stagnant"),
+                    "Poaceae": (20, 50, "decreasing"),
                     "Pediastrum": (50, 140, "stagnant"),
                     "Charcoal": (0, 30, "sporadic"),
                     "Pisidium": (170, 200, "stagnant"),
@@ -840,7 +871,6 @@ class PaleoProfileRandomizer:
                 })
 
         return ranges
-
     def display_table(self, data):
         """Displays the generated data in a table within the Tkinter window."""
 
