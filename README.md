@@ -10,21 +10,21 @@ PPR (Paleo Profile Randomizer) is a Python application designed to generate synt
 
 The application generates data based on user-selected parameters:
 
-*   **Depth:** User-defined depth range (e.g., 200-300 cm) with 2 cm intervals.
+*   **Depth:** User-defined depth range (e.g., 0-600 cm) with 2 cm intervals.
 *   **Zones:** Five distinct zones with randomly assigned percentages (each zone representing 10-60% of the total depth).
 *   **Base Type:** Geological base type (Rock, Sand, Paleosol, or Lake Sediment).
 *   **Environment Type:** Paleoenvironment (Lake, Peatland, or Wetland).
 *   **Parameters:** A comprehensive set of parameters, including:
-    *   OM (Organic Matter)
-    *   CC (Carbonate Content)
-    *   IM (Inorganic Matter)
-    *   MS (Magnetic Susceptibility)
-    *   Clay, Silt, Sand percentages
-    *   Elemental concentrations (Ca, Mg, Na, K)
-    *   Pollen abundances (Pinus, Quercus, Betula, Cerealia)
-    *   Algae and microfossil abundances (Pediastrum, Charcoal, *Pisidium*, *Valvata cristata*, *Vallonia costata*, *Succinea putris*, *Planorbis planorbis*)
+    *   Loss on Ignition: Organic Matter (OM), Carbonate Content (CC), Inorganic Matter (IM)
+    *   Magnetic Susceptibility (MS)
+    *   Grain size: Clay, Silt, Sand percentages
+    *   Water-soluble geochemical concentrations: Ca, Mg, Na, K
+    *   Charcoal abundances
+    *   Pollen abundances: Pinus, Quercus, Betula, Cerealia
+    *   Algae abundances: Pediastrum
+    *   Mollusc abundances: *Pisidium*, *Valvata cristata*, *Vallonia costata*, *Succinea putris*, *Planorbis planorbis*
 
-Data generation is not purely random.  Values follow trends (increasing, decreasing, stagnant, sporadic) that are typical of real-world paleoecological datasets, providing a more realistic simulation.  The generated data is displayed in a scrollable table within the application and can be exported as a CSV file.
+Data generation is not purely random.  Values follow trends (increasing, decreasing, stagnant, sporadic, etc.) that are typical of real-world paleoecological datasets, providing a more realistic simulation.  The generated data is displayed in a scrollable table within the application and can be exported as a CSV file.
 
 ## Why PPR is Useful
 
