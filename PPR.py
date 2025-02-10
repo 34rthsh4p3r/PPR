@@ -25,7 +25,7 @@ class PaleoProfileRandomizer:
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
@@ -35,7 +35,7 @@ class PaleoProfileRandomizer:
         # --- Header Frame ---
         self.header_frame = tk.Frame(master)
         self.header_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
-        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="black", font=("Open Sans", 16, "bold"))
+        title_label = tk.Label(self.header_frame, text="Paleo Profile Randomizer",  fg="black", font=("Arial", 16, "bold"))
         title_label.pack(side=tk.TOP, expand=True)
 
         # --- Input Frame ---
@@ -52,11 +52,18 @@ class PaleoProfileRandomizer:
         self.generate_button.pack(side=tk.LEFT, padx=5)
     
         # --- Save Buttons ---
-        self.save_csv_button = ttk.Button(self.button_frame, text="Save to .csv", command=self.save_data_to_csv, style="OpenSans.TButton")
+        self.save_csv_button = ttk.Button(self.button_frame, text="Save Data (.csv)", command=self.save_data_to_csv, style="OpenSans.TButton")
         self.save_csv_button.pack(side=tk.LEFT, padx=5)
 
-        self.save_xlsx_button = ttk.Button(self.button_frame, text="Save to .xlsx", command=self.save_data_to_xlsx, style="OpenSans.TButton")
+        self.save_xlsx_button = ttk.Button(self.button_frame, text="Save Data (.xlsx)", command=self.save_data_to_xlsx, style="OpenSans.TButton")
         self.save_xlsx_button.pack(side=tk.LEFT, padx=5)
+
+         # --- Save Diagram Buttons ---
+        self.save_png_button = ttk.Button(self.button_frame, text="Save Diagram (.png)", command=lambda: self.save_diagram("png"), style="OpenSans.TButton")
+        self.save_png_button.pack(side=tk.LEFT, padx=5)
+
+        self.save_svg_button = ttk.Button(self.button_frame, text="Save Diagram (.svg)", command=lambda: self.save_diagram("svg"), style="OpenSans.TButton")
+        self.save_svg_button.pack(side=tk.LEFT, padx=5)
     
         # --- Exit Button ---
         self.exit_button = ttk.Button(self.button_frame, text="Exit", command=master.destroy, style="OpenSans.TButton")
@@ -64,19 +71,33 @@ class PaleoProfileRandomizer:
 
         # --- Output Frame ---
         self.output_frame = tk.Frame(master)
-        self.output_frame.grid(row=3, column=0, columnspan=3, sticky="nsew", padx=10, pady=10)
-
-        # --- Scrollbars ---
-        self.h_scrollbar = ttk.Scrollbar(self.output_frame, orient=tk.HORIZONTAL)
+        self.output_frame.grid(row=3, column=0, columnspan=3, sticky="nsew")
+        
+        # Create left and right frames with 60-40 split
+        self.left_frame = tk.Frame(self.output_frame)
+        self.left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Add a separator
+        ttk.Separator(self.output_frame, orient='vertical').pack(side=tk.LEFT, fill='y', padx=2)
+        
+        # Right frame with explicit proportion
+        self.right_frame = tk.Frame(self.output_frame)
+        self.right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
+        
+        # Force the right frame to maintain a specific width
+        self.right_frame.pack_propagate(False)  # Prevent frame from shrinking
+        self.right_frame.configure(width=300)  # Set fixed width for diagram area
+        
+        # --- Table Frame (Left Side) ---
+        self.h_scrollbar = ttk.Scrollbar(self.left_frame, orient=tk.HORIZONTAL)
         self.h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-        self.v_scrollbar = ttk.Scrollbar(self.output_frame, orient=tk.VERTICAL)
+        self.v_scrollbar = ttk.Scrollbar(self.left_frame, orient=tk.VERTICAL)
         self.v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # --- Table Canvas ---
-        self.table_canvas = tk.Canvas(self.output_frame, highlightthickness=0,
+        self.table_canvas = tk.Canvas(self.left_frame, highlightthickness=0,
                                      xscrollcommand=self.h_scrollbar.set,
                                      yscrollcommand=self.v_scrollbar.set)
-        self.table_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.table_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.table_frame = tk.Frame(self.table_canvas)
         self.table_canvas.create_window((0, 0), window=self.table_frame, anchor="nw")
@@ -85,19 +106,23 @@ class PaleoProfileRandomizer:
         self.v_scrollbar.config(command=self.table_canvas.yview)
         self.table_frame.bind("<Configure>", self.on_frame_configure)
 
+        # --- Diagram Frame (Right Side) ---
+        self.diagram_frame = tk.Frame(self.right_frame)
+        self.diagram_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
         # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black", font=("Open Sans", 10, "italic"))
+        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black", font=("Arial", 10))
         version_label.pack(side=tk.TOP, pady=(0,0))  # Reduce padding
 
         # Create a clickable link label for "34rthsh4p3r"
-        link_label = tk.Label(self.bottom_frame, text="34rthsh4p3r", fg="teal", cursor="hand2", font=("Open Sans", 10, "bold"))
+        link_label = tk.Label(self.bottom_frame, text="34rthsh4p3r", fg="teal", cursor="hand2", font=("Arial", 10, "bold"))
         link_label.pack(side=tk.TOP, pady=(0,0)) # Reduce padding
         link_label.bind("<Button-1>", lambda e: self.open_url("https://github.com/34rthsh4p3r/PPR"))
 
         # --- Configure Row Weights ---
-        master.rowconfigure(3, weight=1)  # Output frame should expand vertically
+        master.rowconfigure(3, weight=3)  # Output frame should expand vertically
         master.columnconfigure(0, weight=1) # Make frames fill entire width
         self.output_frame.columnconfigure(0, weight=1) #canvas should fill output_frame
     
@@ -114,7 +139,7 @@ class PaleoProfileRandomizer:
         self.input_container.pack(expand=True) # Key: Center the container
 
         # --- Depth Selection ---
-        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="black")
+        depth_label = tk.Label(self.input_container, text="Choose a depth:", fg="black", font=("Arial", 10, "bold"))
         depth_label.grid(row=0, column=0, sticky="ew")  # Stretch label
         self.input_container.columnconfigure(0, weight=1) # Allow label column to expand
 
@@ -130,12 +155,12 @@ class PaleoProfileRandomizer:
         inner_depth_frame.grid(row=0, column=0)
 
         for i, (text, value) in enumerate(depth_options):
-            rb = ttk.Radiobutton(inner_depth_frame, text=text, variable=self.depth_var, value=value)
+            rb = ttk.Radiobutton(inner_depth_frame, text=text, variable=self.depth_var, value=value, style="OpenSans.TRadiobutton")
             rb.pack(side=tk.LEFT, padx=5)  # Pack within inner frame
 
 
         # --- Base Type Selection ---
-        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="black")
+        base_label = tk.Label(self.input_container, text="Choose a base type:", fg="black", font=("Arial", 10, "bold"))
         base_label.grid(row=2, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -157,7 +182,7 @@ class PaleoProfileRandomizer:
 
 
         # --- Environment Type Selection ---
-        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="black")
+        env_label = tk.Label(self.input_container, text="Choose an environment type:",  fg="black", font=("Arial", 10, "bold"))
         env_label.grid(row=4, column=0, sticky="ew")
         self.input_container.columnconfigure(0, weight=1)
 
@@ -175,17 +200,18 @@ class PaleoProfileRandomizer:
             rb = ttk.Radiobutton(inner_env_frame, text=text, variable=self.env_type_var, value=value)
             rb.pack(side=tk.LEFT, padx=5)
 
-    
-
     def generate_unique_zone_percentages(self):
         """Generates 5 unique random numbers that sum to 100."""
         while True:
-            nums = [random.uniform(10, 60) for _ in range(4)]
-            if len(set(nums)) == 4:
-                remaining = 100 - sum(nums)
-                if 10 <= remaining <= 60:
-                    nums.append(remaining)
-                    random.shuffle(nums)
+            z1 = random.uniform(10, 20)
+            z2 = random.uniform(25, 60)
+            z3 = random.uniform(30, 60)
+            z4 = random.uniform(20, 40)
+            z5 = random.uniform(5, 10)
+            total = round(z1 + z2 + z3 + z4 + z5, 2)
+            if  100-0.02 <= total <= 100+0.02:  #check the rounding
+                nums = [z1, z2, z3, z4, z5]
+                if len(set(nums)) == 5: #Check for uniqueness
                     return nums
 
     def assign_depths_to_zones(self, depth, zone_percentages):
@@ -221,9 +247,7 @@ class PaleoProfileRandomizer:
                 "Clay": 0, "Silt": 0, "Sand": 0,
             }
             
-            all_params = ["MS", "Pinus", "Quercus", "Betula", "Cerealia", "Poaceae",
-                          "Pediastrum", "Charcoal", "Pisidium", "Valvata cristata",
-                          "Vallonia costata", "Succinea putris", "Planorbis planorbis",
+            all_params = ["MS", "CH", "AP", "NAP", "WL", "CR",
                           "Ca", "Mg", "Na", "K"]
 
             for param in all_params:
@@ -261,93 +285,108 @@ class PaleoProfileRandomizer:
 
         normalized_depth = d / depth if depth > 0 else 0
 
-        if trend == "stagnant":
-            midpoint = (min_val + max_val) / 2
-            fluctuation = (max_val - min_val) / 10  # Adjust as needed
-            result = round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
-            return result
-
-        elif trend == "increasing":
-            return round(random.uniform(min_val + (max_val - min_val) * 0.75, max_val), 2)
-
-        elif trend == "decreasing":
-            return round(random.uniform(min_val, min_val + (max_val - min_val) * 0.25), 2)
-
-        elif trend == "increasing with breaks":
-            # 80% chance of increase, 20% chance of a dip
-            if random.random() < 0.8:
-                return round(random.uniform(min_val + (max_val - min_val) * 0.6, max_val), 2) #smaller range than a regular increase
+        if trend == "SP":  # Sporadic: 70% chance to be 0
+            if random.random() < 0.7:
+                return round(0, 2)
             else:
-                return round(random.uniform(min_val, min_val + (max_val-min_val) * 0.4), 2) # Simulates the "break" or dip.
-
-        elif trend == "decreasing then stagnant":
-            if random.random() < 0.6:  # 60% chance of decreasing
-                return round(random.uniform(min_val, min_val + (max_val - min_val) * 0.4), 2)
-            else:  # 40% chance of becoming stagnant
-                midpoint = (min_val + max_val) / 2
-                fluctuation = (max_val - min_val) / 20  # Smaller fluctuation for stagnant
-                return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
-
-        elif trend == "increasing then stagnant":
-            if random.random() < 0.6:  # 60% chance of increasing
-                return round(random.uniform(min_val + (max_val - min_val) * 0.6, max_val), 2)
-            else:  # 40% chance of becoming stagnant
-                midpoint = (min_val + max_val) / 2
-                fluctuation = (max_val - min_val) / 20  # Smaller fluctuation for stagnant
-                return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
-
-        elif trend == "sporadic up and down":
-            midpoint = (min_val + max_val) / 2
-            fluctuation = (max_val - min_val) / 4  # Larger fluctuation
-            return round(random.uniform(max(min_val, midpoint - fluctuation), min(max_val, midpoint + fluctuation)), 2)
-
-        elif trend == "increasing then decreasing":
-            if random.random() < 0.5: # 50% chance to be in the increasing part
-                return round(random.uniform(min_val, (min_val + max_val) / 2 ), 2)
-            else: # 50% chance to be in the decreasing part.
-                return round(random.uniform((min_val + max_val) / 2, max_val), 2)
-        
-        elif trend == "sporadic":
-            if random.random() < 0.2:
                 return round(random.uniform(min_val, max_val), 2)
-            else:
-                return round((0),2)
-       
-        elif trend == "increasing_then_stagnant":
-            if normalized_depth <= 0.5:
-                return round(float(min_val + (max_val - min_val) * (normalized_depth * 2)),2)
-            else:
-                return round(random.uniform(float(max_val * 0.95), float(max_val * 1.05)),2)
 
-        elif trend == "decreasing_then_stagnant":
-            if normalized_depth <= 0.5:
-                return round(float(max_val - (max_val - min_val) * (normalized_depth * 2)),2)
-            else:
-                return round(random.uniform(float(min_val * 0.95), float(min_val * 1.05)),2)
-        elif trend == "sporadic_up_down":
-            base_value = random.uniform(min_val, max_val)
-            if random.random() < 0.3:
-                deviation = random.uniform(float(0.3 * (max_val - min_val)), float(0.7 * (max_val - min_val)))
-                if random.choice([True, False]):
-                    base_value += deviation
-                else:
-                    base_value -= deviation
-                base_value = max(min_val, min(base_value, max_val))
-            return round((base_value),2)
-        
-        elif trend == "increasing_then_decreasing":
-            midpoint = (zones[zone_num][0] + zones[zone_num][1]) / 2
+        elif trend == "UP":  # Up: Increasing values
+            if not hasattr(self, f'{param}_last_val_up'):
+                setattr(self, f'{param}_last_val_up', min_val * 1.3)  # Initialize
+            last_val_up = getattr(self, f'{param}_last_val_up')
+            new_val = random.uniform(last_val_up, max_val * 0.7)
+            setattr(self, f'{param}_last_val_up', new_val)
+            return round(new_val, 2)
+
+        elif trend == "DN":  # Down: Decreasing values
+            if not hasattr(self, f'{param}_last_val_dn'):
+                setattr(self, f'{param}_last_val_dn', max_val * 0.7) # Initialize
+            last_val_dn = getattr(self, f'{param}_last_val_dn')
+            new_val = random.uniform(min_val * 1.3, last_val_dn)
+            setattr(self, f'{param}_last_val_dn', new_val)
+            return round(new_val, 2)
+
+        elif trend == "LF":  # LowFluctuation
+            if not hasattr(self, f'{param}_lf_center'):
+                setattr(self, f'{param}_lf_center', (min_val + max_val) / 2)   # or some other initial value
+            lf_center = getattr(self, f'{param}_lf_center')
+            fluctuation = (max_val - min_val) * 0.4  # 40% fluctuation
+            new_val = random.uniform(lf_center - fluctuation, lf_center + fluctuation)
+            setattr(self, f'{param}_lf_center', new_val)  # Update center for next call, creating slow drift
+            return round(new_val, 2)
+
+        elif trend == "HF":  # HighFluctuation
+            fluctuation = (max_val - min_val) * 0.8  # 80% fluctuation
+            center = (min_val + max_val) / 2
+            return round(random.uniform(center - fluctuation, center + fluctuation), 2)
+            
+        elif trend == "SL": #StagnantLow: first stagnant, then decreasing
+            midpoint_ratio = random.uniform(0.4, 0.6)
+            midpoint = depth * midpoint_ratio
             if d <= midpoint:
-                normalized_zone_depth = (d - zones[zone_num][0]) / (midpoint - zones[zone_num][0]) if (midpoint -
-                                                                                                       zones[zone_num][
-                                                                                                           0]) > 0 else 0
-                return round(float(min_val + (max_val - min_val) * normalized_zone_depth),2)
+                if not hasattr(self, f'{param}_stagnant_center_sl'):
+                    setattr(self, f'{param}_stagnant_center_sl', random.uniform(min_val * 1.2, max_val * 0.8))
+                stagnant_center_sl = getattr(self, f'{param}_stagnant_center_sl')
+                fluctuation = (max_val - min_val) * 0.05  # 5% fluctuation
+                return round(random.uniform(max(min_val, stagnant_center_sl - fluctuation), min(max_val, stagnant_center_sl + fluctuation)), 2)
+
             else:
-                normalized_zone_depth = (d - midpoint) / (zones[zone_num][1] - midpoint) if (zones[zone_num][
-                                                                                                 1] - midpoint) > 0 else 0
-                return round(float(max_val - (max_val - min_val) * normalized_zone_depth),2)
-        else:
-            return round(random.uniform(min_val, max_val),2)
+                if not hasattr(self, f'{param}_last_val_sl'):
+                    setattr(self, f'{param}_last_val_sl', getattr(self, f'{param}_stagnant_center_sl'))#initialize with the stagnant value
+                last_val_sl = getattr(self, f'{param}_last_val_sl')
+                normalized_depth = (d - midpoint) / (depth - midpoint) if (depth - midpoint) > 0 else 0
+                new_val = round(float(last_val_sl - (last_val_sl-min_val) * normalized_depth * 0.5 ),2) #slower decreasing
+                setattr(self, f'{param}_last_val_sl', new_val)
+                return max(min_val, min(new_val, max_val)) #Limit the value
+
+        elif trend == "SH": #StagnantHigh: first stagnant, then increasing
+            midpoint_ratio = random.uniform(0.4, 0.6)
+            midpoint = depth * midpoint_ratio
+            if d <= midpoint:
+                if not hasattr(self, f'{param}_stagnant_center_sh'):
+                    setattr(self, f'{param}_stagnant_center_sh', random.uniform(min_val * 1.2, max_val * 0.8))
+                stagnant_center_sh = getattr(self, f'{param}_stagnant_center_sh')
+                fluctuation = (max_val - min_val) * 0.05
+                return round(random.uniform(max(min_val, stagnant_center_sh - fluctuation), min(max_val, stagnant_center_sh + fluctuation)), 2)
+            else:
+                if not hasattr(self, f'{param}_last_val_sh'):
+                    setattr(self, f'{param}_last_val_sh', getattr(self, f'{param}_stagnant_center_sh')) #initialize with the stagnant value
+                last_val_sh = getattr(self, f'{param}_last_val_sh')
+                normalized_depth = (d - midpoint) / (depth - midpoint) if (depth - midpoint) > 0 else 0
+
+                new_val = round(float(last_val_sh + (max_val - last_val_sh) * normalized_depth * 0.5),2) #Slower increasing
+                setattr(self, f'{param}_last_val_sh', new_val)
+                return max(min_val, min(new_val, max_val))  #Limit the value
+
+        elif trend == "UD":  # UpDown
+            midpoint_ratio = random.uniform(0.4, 0.6)
+            midpoint = zones[zone_num][0] + (zones[zone_num][1] - zones[zone_num][0]) * midpoint_ratio
+
+            if d <= midpoint:
+                # Increasing part
+                normalized_zone_depth = (d - zones[zone_num][0]) / (midpoint - zones[zone_num][0]) if (midpoint - zones[zone_num][0]) > 0 else 0
+                return round(float(min_val + (max_val - min_val) * normalized_zone_depth), 2)
+            else:
+                # Decreasing part
+                normalized_zone_depth = (d - midpoint) / (zones[zone_num][1] - midpoint) if (zones[zone_num][1] - midpoint) > 0 else 0
+                return round(float(max_val - (max_val - min_val) * normalized_zone_depth), 2)
+
+        elif trend == "DU":  # DownUp
+            midpoint_ratio = random.uniform(0.4, 0.6)
+            midpoint = zones[zone_num][0] + (zones[zone_num][1] - zones[zone_num][0]) * midpoint_ratio
+
+            if d <= midpoint:
+                # Decreasing part
+                normalized_zone_depth = (d - zones[zone_num][0]) / (midpoint - zones[zone_num][0]) if (midpoint - zones[zone_num][0]) > 0 else 0
+                return round(float(max_val - (max_val - min_val) * normalized_zone_depth), 2)
+            else:
+                # Increasing part
+                normalized_zone_depth = (d - midpoint) / (zones[zone_num][1] - midpoint) if (zones[zone_num][1] - midpoint) > 0 else 0
+                return round(float(min_val + (max_val - min_val) * normalized_zone_depth), 2)
+        
+        elif trend == "RM": # Random
+            return round(random.uniform(min_val, max_val), 2)
 
     def generate_profile(self):
         """Generates the paleo profile based on user selections."""
@@ -452,436 +491,328 @@ class PaleoProfileRandomizer:
         if zone_num == 5:  # Base type only applies to zone 5
             if base_type == "Rock":
                 ranges = {
-                    "OM": (0, 5, "increasing"),
-                    "IM": (70, 95, "decreasing"),
-                    "CC": (5, 30, "decreasing_then_stagnant"),
-                    "Clay": (0, 5, "stagnant"),
-                    "Silt": (5, 15, "stagnant"),
-                    "Sand": (70, 90, "stagnant"),
-                    "MS": (150, 250, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (0, 5, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (80, 100, "stagnant"),
-                    "Ca": (270, 400, "stagnant"),
-                    "Mg": (250, 330, "stagnant"),
-                    "Na": (300, 400, "stagnant"),
-                    "K": (300, 400, "stagnant")
+                    "OM": (0, 0, "LF"),
+                    "IM": (70, 95, "LF"),
+                    "CC": (12, 30, "LF"),
+                    "Clay": (0, 5, "LF"),
+                    "Silt": (5, 15, "HF"),
+                    "Sand": (70, 90, "HF"),
+                    "MS": (130, 220, "HF"),
+                    "CH": (0, 0, "SP"),
+                    "AP": (0, 0, "LF"),
+                    "NAP": (0, 0, "LF"),
+                    "WL": (0, 0, "LF"),
+                    "CR": (0, 0, "LF"),
+                    "Ca": (270, 400, "HF"),
+                    "Mg": (250, 330, "HF"),
+                    "Na": (300, 400, "HF"),
+                    "K": (300, 400, "HF")
                 }
             elif base_type == "Sand":
                 ranges = {
-                    "OM": (0, 0, "stagnant"),
-                    "IM": (70, 95, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "Clay": (0, 5, "stagnant"),
-                    "Silt": (0, 10, "stagnant"),
-                    "Sand": (85, 95, "stagnant"),
-                    "MS": (150, 200, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (0, 10, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (60, 200, "stagnant"),
-                    "Ca": (70, 100, "stagnant"),
-                    "Mg": (50, 90, "stagnant"),
-                    "Na": (100, 150, "stagnant"),
-                    "K": (100, 140, "stagnant")
+                    "OM": (0, 0, "LF"),
+                    "IM": (70, 95, "LF"),
+                    "CC": (5, 20, "LF"),
+                    "Clay": (0, 5, "LF"),
+                    "Silt": (0, 10, "LF"),
+                    "Sand": (85, 95, "LF"),
+                    "MS": (150, 200, "LF"),
+                    "CH": (0, 0, "SP"),
+                    "AP": (20, 60, "LF"),
+                    "NAP": (0, 20, "LF"),
+                    "WL": (0, 0, "LF"),
+                    "CR": (30, 90, "LF"),
+                    "Ca": (70, 100, "LF"),
+                    "Mg": (50, 90, "LF"),
+                    "Na": (100, 150, "LF"),
+                    "K": (100, 140, "LF")
                 }
             elif base_type == "Paleosol":
                 ranges = {
-                    "OM": (15, 35, "stagnant"),
-                    "IM": (40, 70, "decreasing"),
-                    "CC": (5, 30, "decreasing_then_stagnant"),
-                    "Clay": (5, 20, "stagnant"),
-                    "Silt": (5, 15, "stagnant"),
-                    "Sand": (70, 90, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (30, 60, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (170, 230, "stagnant"),
-                    "Ca": (100, 200, "stagnant"),
-                    "Mg": (100, 130, "stagnant"),
-                    "Na": (100, 200, "stagnant"),
-                    "K": (100, 200, "stagnant")
+                    "OM": (15, 35, "LF"),
+                    "IM": (40, 70, "LF"),
+                    "CC": (10, 30, "DN"),
+                    "Clay": (5, 20, "LF"),
+                    "Silt": (5, 15, "LF"),
+                    "Sand": (70, 90, "LF"),
+                    "MS": (100, 150, "LF"),
+                    "CH": (0, 10, "SP"),
+                    "AP": (130, 280, "LF"),
+                    "NAP": (10, 90, "LF"),
+                    "WL": (40, 100, "UP"),
+                    "CR": (60, 90, "DN"),
+                    "Ca": (100, 200, "HF"),
+                    "Mg": (100, 130, "HF"),
+                    "Na": (100, 200, "LF"),
+                    "K": (100, 200, "LF")
                 }
             elif base_type == "Lake sediment":
                 ranges = {
-                    "OM": (5, 15, "stagnant"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (20, 50, "decreasing"),
-                    "Poaceae": (120, 150, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 200, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (5, 15, "LF"),
+                    "IM": (40, 80, "LF"),
+                    "CC": (5, 30, "LF"),
+                    "Clay": (10, 20, "LF"),
+                    "Silt": (10, 60, "LF"),
+                    "Sand": (20, 40, "LF"),
+                    "MS": (100, 150, "LF"),
+                    "CH": (0, 10, "SP"),
+                    "AP": (120, 260, "LF"),
+                    "NAP": (20, 90, "LF"),
+                    "WL": (10, 30, "UP"),
+                    "CR": (130, 290, "LF"),
+                    "Ca": (130, 200, "HF"),
+                    "Mg": (90, 130, "HF"),
+                    "Na": (200, 300, "LF"),
+                    "K": (200, 300, "LF")
                 }
         # Zones 1-4, influenced by env_type
         elif zone_num == 4:
             if env_type == "Lake":
                 ranges.update({
-                    "OM": (5, 15, "stagnant"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (100, 120, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 10, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (5, 20, "LF"),
+                    "IM": (40, 80, "HF"),
+                    "CC": (5, 35, "LF"),
+                    "Clay": (10, 20, "LF"),
+                    "Silt": (10, 60, "LF"),
+                    "Sand": (20, 40, "DN"),
+                    "MS": (100, 150, "LF"),
+                    "CH": (0, 0, "SP"),
+                    "AP": (100, 160, "DN"),
+                    "NAP": (20, 40, "HF"),
+                    "WL": (20, 50, "HF"),
+                    "CR": (115, 250, "LF"),
+                    "Ca": (150, 190, "HF"),
+                    "Mg": (110, 140, "HF"),
+                    "Na": (220, 310, "HF"),
+                    "K": (210, 330, "LF")
                 })
             elif env_type == "Peatland":
                 ranges.update({
-                    "OM": (2, 15, "increasing"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (80, 120, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (2, 25, "HF"),
+                    "IM": (40, 80, "LF"),
+                    "CC": (5, 30, "DN"),
+                    "Clay": (10, 20, "HF"),
+                    "Silt": (10, 60, "LF"),
+                    "Sand": (20, 40, "DN"),
+                    "MS": (100, 150, "LF"),
+                    "CH": (0, 12, "SP"),
+                    "AP": (45, 199, "LF"),
+                    "NAP": (40, 80, "HF"),
+                    "WL": (40, 140, "HF"),
+                    "CR": (30, 90, "LF"),
+                    "Ca": (130, 200, "LF"),
+                    "Mg": (90, 130, "LF"),
+                    "Na": (200, 300, "LF"),
+                    "K": (200, 300, "LF")
                 })
             elif env_type == "Wetland":
                 ranges.update({
-                    "OM": (5, 20, "stagnant"),
-                    "IM": (40, 80, "stagnant"),
-                    "CC": (5, 30, "stagnant"),
-                    "Clay": (10, 20, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 40, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (100, 150, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (80, 130, "stagnant"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (70, 200, "stagnant"),
-                    "Valvata cristata": (0, 30, "sporadic"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (5, 20, "HF"),
+                    "IM": (40, 80, "LF"),
+                    "CC": (5, 30, "DN"),
+                    "Clay": (10, 20, "HF"),
+                    "Silt": (10, 60, "LF"),
+                    "Sand": (20, 40, "LF"),
+                    "MS": (100, 150, "LF"),
+                    "CH": (0, 0, "SP"),
+                    "AP": (45, 199, "LF"),
+                    "NAP": (40, 80, "HF"),
+                    "WL": (140, 240, "HF"),
+                    "CR": (50, 120, "LF"),
+                    "Ca": (130, 200, "HF"),
+                    "Mg": (90, 130, "HF"),
+                    "Na": (200, 300, "HF"),
+                    "K": (200, 300, "HF")
                 })
 
         elif zone_num == 3:
             if env_type == "Lake":
                 ranges.update({
-                    "OM": (5, 15, "sporadic_up_down"),
-                    "IM": (40, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "Clay": (5, 40, "stagnant"),
-                    "Silt": (5, 60, "stagnant"),
-                    "Sand": (5, 60, "stagnant"),
-                    "MS": (100, 150, "stagnant"),
-                    "Pinus": (70, 120, "stagnant"),
-                    "Quercus": (0, 0, "stagnant"),
-                    "Betula": (0, 0, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (40, 90, "decreasing"),
-                    "Pediastrum": (0, 0, "stagnant"),
-                    "Charcoal": (0, 3, "stagnant"),
-                    "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (10, 30, "stagnant"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (9, 18, "HF"),
+                    "IM": (40, 80, "HF"),
+                    "CC": (5, 30, "HF"),
+                    "Clay": (5, 40, "LF"),
+                    "Silt": (5, 60, "LF"),
+                    "Sand": (5, 60, "LF"),
+                    "MS": (100, 150, "HF"),
+                    "CH": (0, 5, "SP"),
+                    "AP": (45, 199, "LF"),
+                    "NAP": (40, 80, "HF"),
+                    "WL": (40, 140, "HF"),
+                    "CR": (30, 90, "LF"),
+                    "Ca": (130, 200, "HF"),
+                    "Mg": (90, 130, "LF"),
+                    "Na": (200, 300, "HF"),
+                    "K": (200, 300, "HF")
                 })
             elif env_type == "Peatland":
               ranges.update({
-                "OM": (10, 30, "sporadic_up_down"),
-                "IM": (40, 80, "sporadic_up_down"),
-                "CC": (5, 30, "sporadic_up_down"),
-                "Clay": (5, 40, "stagnant"),
-                "Silt": (5, 60, "stagnant"),
-                "Sand": (5, 60, "stagnant"),
-                "MS": (100, 150, "stagnant"),
-                "Pinus": (70, 120, "stagnant"),
-                "Quercus": (0, 0, "stagnant"),
-                "Betula": (0, 0, "stagnant"),
-                "Cerealia": (0, 0, "stagnant"),
-                "Poaceae": (60, 90, "stagnant"),
-                "Pediastrum": (0, 0, "stagnant"),
-                "Charcoal": (0, 3, "sporadic"),
-                "Pisidium": (70, 100, "stagnant"),
-                "Valvata cristata": (5, 30, "stagnant"),
-                "Vallonia costata": (0, 0, "stagnant"),
-                "Succinea putris": (0, 0, "stagnant"),
-                "Planorbis planorbis": (70, 230, "stagnant"),
-                "Ca": (130, 200, "stagnant"),
-                "Mg": (90, 130, "stagnant"),
-                "Na": (200, 300, "stagnant"),
-                "K": (200, 300, "stagnant")
+                "OM": (30, 60, "HF"),
+                "IM": (20, 60, "LF"),
+                "CC": (5, 30, "LF"),
+                "Clay": (5, 40, "HF"),
+                "Silt": (5, 60, "LF"),
+                "Sand": (5, 40, "LF"),
+                "MS": (50, 100, "LF"),
+                "CH": (0, 5, "SP"),
+                "AP": (45, 199, "LF"),
+                "NAP": (40, 80, "HF"),
+                "WL": (220, 340, "HF"),
+                "CR": (0, 30, "SP"),
+                "Ca": (130, 200, "LF"),
+                "Mg": (90, 130, "LF"),
+                "Na": (200, 300, "LF"),
+                "K": (200, 300, "LF")
             })
             elif env_type == "Wetland":
                 ranges.update({
-                    "OM": (10, 30, "stagnant"),
-                    "IM": (30, 70, "sporadic_up_down"),
-                    "CC": (20, 40, "sporadic_up_down"),
-                    "Clay": (10, 40, "stagnant"),
-                    "Silt": (20, 60, "stagnant"),
-                    "Sand": (10, 50, "stagnant"),
-                    "MS": (40, 70, "stagnant"),
-                    "Pinus": (30, 90, "stagnant"),
-                    "Quercus": (70, 140, "increasing"),
-                    "Betula": (200, 360, "increasing"),
-                    "Poaceae": (80, 110, "stagnant"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Pediastrum": (20, 50, "increasing"),
-                    "Charcoal": (0, 0, "sporadic"),
-                    "Pisidium": (80, 130, "decreasing"),
-                    "Valvata cristata": (15, 50, "increasing"),
-                    "Vallonia costata": (30, 80, "stagnant"),
-                    "Succinea putris": (30, 80, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (830, 1400, "stagnant"),
-                    "Mg": (390, 530, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (10, 30, "LF"),
+                    "IM": (30, 70, "HF"),
+                    "CC": (20, 40, "HF"),
+                    "Clay": (10, 40, "LF"),
+                    "Silt": (20, 60, "LF"),
+                    "Sand": (10, 50, "LF"),
+                    "MS": (40, 70, "LF"),
+                    "CH": (0, 5, "SP"),
+                    "AP": (45, 199, "LF"),
+                    "NAP": (40, 80, "HF"),
+                    "WL": (220, 340, "HF"),
+                    "CR": (0, 30, "SP"),
+                    "Ca": (830, 1400, "LF"),
+                    "Mg": (390, 530, "LF"),
+                    "Na": (200, 300, "LF"),
+                    "K": (200, 300, "LF")
                 })
 
         elif zone_num == 2:
             if env_type == "Lake":
                 ranges.update({
-                    "OM": (10, 20, "sporadic_up_down"),
-                    "IM": (40, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "Clay": (5, 40, "stagnant"),
-                    "Silt": (5, 60, "stagnant"),
-                    "Sand": (5, 60, "stagnant"),
-                    "MS": (50, 80, "stagnant"),
-                    "Pinus": (70, 120, "stagnant"),
-                    "Quercus": (140, 140, "stagnant"),
-                    "Betula": (60, 60, "stagnant"),
-                    "Cerealia": (0, 10, "increasing"),
-                    "Poaceae": (30, 60, "decreasing"),
-                    "Pediastrum": (20, 50, "increasing"),
-                    "Charcoal": (0, 0, "stagnant"),
-                    "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (10, 30, "stagnant"),
-                    "Vallonia costata": (0, 0, "stagnant"),
-                    "Succinea putris": (0, 0, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (630, 1200, "stagnant"),
-                    "Mg": (190, 230, "stagnant"),
-                    "Na": (200, 300, "stagnant"),
-                    "K": (200, 300, "stagnant")
+                    "OM": (10, 30, "LF"),
+                    "IM": (40, 80, "HF"),
+                    "CC": (5, 40, "HF"),
+                    "Clay": (5, 40, "HF"),
+                    "Silt": (5, 60, "HF"),
+                    "Sand": (5, 60, "LF"),
+                    "MS": (50, 80, "LF"),
+                    "CH": (0, 0, "SP"),
+                    "AP": (45, 199, "LF"),
+                    "NAP": (40, 80, "HF"),
+                    "WL": (220, 340, "HF"),
+                    "CR": (0, 10, "SP"),
+                    "Ca": (630, 1200, "LF"),
+                    "Mg": (190, 230, "LF"),
+                    "Na": (200, 300, "LF"),
+                    "K": (200, 300, "LF")
                 })
             elif env_type == "Peatland":
               ranges.update({
-                "OM": (80, 99, "stagnant"),
-                "IM": (1, 10, "sporadic_up_down"),
-                "CC": (1, 5, "sporadic_up_down"),
-                "Clay": (20, 60, "stagnant"),
-                "Silt": (20, 60, "stagnant"),
-                "Sand": (1, 5, "stagnant"),
-                "MS": (20, 40, "stagnant"),
-                "Pinus": (30, 90, "stagnant"),
-                "Quercus": (70, 140, "increasing"),
-                "Betula": (200, 360, "increasing"),
-                "Cerealia": (0, 0, "stagnant"),
-                "Poaceae": (20, 50, "stagnant"),
-                "Pediastrum": (20, 50, "increasing"),
-                "Charcoal": (0, 10, "sporadic"),
-                "Pisidium": (80, 130, "decreasing"),
-                "Valvata cristata": (15, 50, "increasing"),
-                "Vallonia costata": (30, 80, "sporadic_up_down"),
-                "Succinea putris": (30, 80, "stagnant"),
-                "Planorbis planorbis": (70, 230, "stagnant"),
-                "Ca": (630, 1200, "stagnant"),
-                "Mg": (190, 230, "stagnant"),
-                "Na": (500, 600, "stagnant"),
-                "K": (500, 600, "stagnant")
+                "OM": (80, 99, "RM"),
+                "IM": (1, 10, "HF"),
+                "CC": (1, 5, "HF"),
+                "Clay": (20, 60, "HF"),
+                "Silt": (20, 60, "LF"),
+                "Sand": (1, 5, "LF"),
+                "MS": (20, 40, "LF"),
+                "CH": (0, 0, "SP"),
+                "AP": (45, 80, "LF"),
+                "NAP": (140, 180, "HF"),
+                "WL": (220, 340, "HF"),
+                "CR": (0, 10, "SP"),
+                "Ca": (630, 1200, "LF"),
+                "Mg": (190, 230, "LF"),
+                "Na": (500, 600, "LF"),
+                "K": (500, 600, "LF")
             })
             elif env_type == "Wetland":
                 ranges.update({
-                    "OM": (50, 90, "stagnant"),
-                    "IM": (5, 30, "sporadic_up_down"),
-                    "CC": (5, 15, "sporadic_up_down"),
-                    "Clay": (20, 60, "stagnant"),
-                    "Silt": (20, 60, "stagnant"),
-                    "Sand": (1, 5, "stagnant"),
-                    "MS": (120, 140, "increasing"),
-                    "Pinus": (30, 90, "stagnant"),
-                    "Quercus": (70, 140, "increasing"),
-                    "Betula": (200, 360, "increasing"),
-                    "Cerealia": (0, 0, "stagnant"),
-                    "Poaceae": (30, 60, "decreasing"),
-                    "Pediastrum": (20, 50, "increasing"),
-                    "Charcoal": (0, 10, "sporadic"),
-                    "Pisidium": (80, 130, "decreasing"),
-                    "Valvata cristata": (15, 50, "increasing"),
-                    "Vallonia costata": (30, 80, "stagnant"),
-                    "Succinea putris": (30, 80, "stagnant"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (130, 200, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (500, 600, "stagnant"),
-                    "K": (500, 600, "stagnant")
+                    "OM": (50, 90, "LF"),
+                    "IM": (5, 30, "HF"),
+                    "CC": (5, 15, "HF"),
+                    "Clay": (20, 60, "LF"),
+                    "Silt": (20, 60, "LF"),
+                    "Sand": (1, 5, "LF"),
+                    "MS": (120, 140, "HF"),
+                    "CH": (0, 10, "SP"),
+                    "AP": (45, 80, "LF"),
+                    "NAP": (140, 180, "HF"),
+                    "WL": (220, 340, "HF"),
+                    "CR": (0, 10, "SP"),
+                    "Ca": (130, 200, "LF"),
+                    "Mg": (90, 130, "LF"),
+                    "Na": (500, 600, "LF"),
+                    "K": (500, 600, "LF")
                 })
 
         elif zone_num == 1:
             if env_type == "Lake":
                 ranges.update({
-                    "OM": (5, 15, "sporadic_up_down"),
-                    "IM": (40, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "Clay": (5, 40, "stagnant"),
-                    "Silt": (10, 60, "stagnant"),
-                    "Sand": (20, 60, "stagnant"),
-                    "MS": (150, 300, "increasing"),
-                    "Pinus": (30, 190, "stagnant"),
-                    "Quercus": (200, 350, "stagnant"),
-                    "Betula": (180, 240, "stagnant"),
-                    "Cerealia": (20, 90, "increasing"),
-                    "Poaceae": (20, 50, "decreasing"),
-                    "Pediastrum": (30, 70, "increasing"),
-                    "Charcoal": (30, 40, "sporadic"),
-                    "Pisidium": (70, 100, "stagnant"),
-                    "Valvata cristata": (10, 30, "stagnant"),
-                    "Vallonia costata": (70, 200, "decreasing"),
-                    "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                    "Planorbis planorbis": (70, 230, "stagnant"),
-                    "Ca": (190, 240, "stagnant"),
-                    "Mg": (90, 130, "stagnant"),
-                    "Na": (400, 600, "stagnant"),
-                    "K": (400, 500, "stagnant")
+                    "OM": (5, 15, "RM"),
+                    "IM": (40, 80, "RM"),
+                    "CC": (5, 30, "RM"),
+                    "Clay": (5, 40, "LF"),
+                    "Silt": (10, 60, "LF"),
+                    "Sand": (20, 60, "LF"),
+                    "MS": (150, 300, "HF"),
+                    "CH": (0, 15, "SP"),
+                    "AP": (145, 180, "LF"),
+                    "NAP": (340, 480, "HF"),
+                    "WL": (220, 340, "HF"),
+                    "CR": (0, 30, "SP"),
+                    "Ca": (190, 240, "LF"),
+                    "Mg": (90, 130, "LF"),
+                    "Na": (400, 600, "LF"),
+                    "K": (400, 500, "LF")
                 })
             elif env_type == "Peatland":
               ranges.update({
-                "OM": (5, 20, "sporadic_up_down"),
-                "IM": (40, 80, "sporadic_up_down"),
-                "CC": (5, 30, "sporadic_up_down"),
-                "Clay": (5, 40, "stagnant"),
-                "Silt": (10, 60, "stagnant"),
-                "Sand": (20, 60, "stagnant"),
-                "MS": (150, 300, "increasing"),
-                "Pinus": (30, 190, "stagnant"),
-                "Quercus": (200, 350, "stagnant"),
-                "Betula": (180, 240, "stagnant"),
-                "Cerealia": (20, 90, "increasing"),
-                "Poaceae": (40, 90, "increasing"),
-                "Pediastrum": (30, 70, "increasing"),
-                "Charcoal": (30, 40, "sporadic"),
-                "Pisidium": (90, 150, "stagnant"),
-                "Valvata cristata": (35, 80, "stagnant"),
-                "Vallonia costata": (170, 230, "decreasing"),
-                "Succinea putris": (70, 100, "increasing_then_decreasing"),
-                "Planorbis planorbis": (70, 230, "stagnant"),
-                "Ca": (190, 240, "stagnant"),
-                "Mg": (90, 130, "stagnant"),
-                "Na": (600, 900, "stagnant"),
-                "K": (600, 900, "stagnant")
+                "OM": (25, 70, "HF"),
+                "IM": (40, 80, "RM"),
+                "CC": (5, 20, "RM"),
+                "Clay": (5, 40, "LF"),
+                "Silt": (10, 60, "LF"),
+                "Sand": (20, 60, "LF"),
+                "MS": (150, 300, "HF"),
+                "CH": (0, 15, "SP"),
+                "AP": (145, 180, "LF"),
+                "NAP": (340, 480, "HF"),
+                "WL": (220, 340, "HF"),
+                "CR": (0, 30, "SP"),
+                "Ca": (190, 240, "LF"),
+                "Mg": (90, 130, "LF"),
+                "Na": (600, 900, "LF"),
+                "K": (600, 900, "LF")
             })
             elif env_type == "Wetland":
                 ranges.update({
-                    "OM": (10, 70, "sporadic_up_down"),
-                    "IM": (10, 80, "sporadic_up_down"),
-                    "CC": (5, 30, "sporadic_up_down"),
-                    "Clay": (5, 20, "stagnant"),
-                    "Silt": (30, 60, "stagnant"),
-                    "Sand": (40, 70, "stagnant"),
-                    "MS": (400, 700, "stagnant"),
-                    "Pinus": (50, 100, "stagnant"),
-                    "Quercus": (100, 200, "stagnant"),
-                    "Betula": (100, 200, "stagnant"),
-                    "Cerealia": (300, 400, "stagnant"),
-                    "Poaceae": (20, 50, "decreasing"),
-                    "Pediastrum": (50, 140, "stagnant"),
-                    "Charcoal": (0, 30, "sporadic"),
-                    "Pisidium": (170, 200, "stagnant"),
-                    "Valvata cristata": (15, 70, "stagnant"),
-                    "Vallonia costata": (100, 300, "stagnant"),
-                    "Succinea putris": (100, 200, "stagnant"),
-                    "Planorbis planorbis": (170, 330, "stagnant"),
-                    "Ca": (130, 250, "stagnant"),
-                    "Mg": (90, 230, "stagnant"),
-                    "Na": (800, 900, "stagnant"),
-                    "K": (800, 900, "stagnant")
+                    "OM": (30, 70, "HF"),
+                    "IM": (10, 80, "HF"),
+                    "CC": (5, 30, "HF"),
+                    "Clay": (5, 20, "LF"),
+                    "Silt": (30, 60, "LF"),
+                    "Sand": (40, 70, "LF"),
+                    "MS": (400, 700, "LF"),
+                    "CH": (0, 15, "SP"),
+                    "AP": (145, 280, "LF"),
+                    "NAP": (340, 480, "LF"),
+                    "WL": (220, 340, "LF"),
+                    "CR": (0, 30, "SP"),
+                    "Ca": (130, 250, "LF"),
+                    "Mg": (90, 230, "LF"),
+                    "Na": (800, 900, "LF"),
+                    "K": (800, 900, "LF")
                 })
 
         return ranges
     def display_table(self, data):
         """Displays the generated data in a table within the Tkinter window."""
 
-        # Clear any existing table
+        # Clear any existing table and diagram
         for widget in self.table_frame.winfo_children():
             widget.destroy()
+        
+        # --- Diagram Display ---
+        if hasattr(self, 'figure_canvas'):  # Check for existence
+            self.figure_canvas.get_tk_widget().destroy()  
 
         if not data:
             no_data_label = tk.Label(self.table_frame, text="No data to display.", fg="black")  # Removed bg color
@@ -889,24 +820,63 @@ class PaleoProfileRandomizer:
             return
 
          # --- Create Table Headers ---
+
         headers = list(data[0].keys())
         for j, header in enumerate(headers):
                 label = tk.Label(self.table_frame, text=header, relief="solid", borderwidth=1,
-                             fg="black", padx=5, pady=5, font=("Open Sans", 10, "bold"))  # Removed bg color
-                label.grid(row=0, column=j, sticky="ew")
+                             fg="black", padx=2, pady=2, font=("Helvetica", 9, "bold"))  # Removed bg color
+                label.grid(row=0, column=j, sticky="nsew") # Changed sticky to nsew
 
         # --- Populate Table with Data ---
+
         for i, row_data in enumerate(data):
             for j, header in enumerate(headers):
                  value = row_data[header]
                  label = tk.Label(self.table_frame, text=str(value), relief="solid", borderwidth=1,
-                                  fg="black", padx=5, pady=5, font=("Open Sans", 10))  # Removed bg color
-                 label.grid(row=i + 1, column=j, sticky="ew")
+                                  fg="black", padx=2, pady=2, font=("Helvetica", 9))  # Removed bg color
+                 label.grid(row=i + 1, column=j, sticky="nsew") # Changed sticky to nsew
 
          # --- Configure Column Weights (for resizing) ---
+
         for j in range(len(headers)):
             self.table_frame.columnconfigure(j, weight=1)
-        self.table_canvas.config(scrollregion=self.table_canvas.bbox(tk.ALL))
+        #self.table_canvas.config(scrollregion=self.table_canvas.bbox(tk.ALL)) #Removed this line
+        self.table_frame.update_idletasks() #Added this line
+        self.table_canvas.config(scrollregion=self.table_canvas.bbox("all")) #Added this line
+
+
+        self.display_diagram(data)  # Call diagram display after table
+
+    def display_diagram(self, data):
+        """Displays the generated data as a diagram."""
+        if not data:
+            return  # No data, no diagram
+
+        df = pd.DataFrame(data)
+        df = df.set_index('Depth')
+        df = df.drop('Zone', axis=1)  # Remove the 'Zone' column
+
+        # --- Create the Matplotlib Figure ---
+        fig, axes = plt.subplots(nrows=1, ncols=len(df.columns), figsize=(10, 10), sharey=True)
+        
+        if len(df.columns) == 1:
+            axes = [axes]
+
+        for ax, col in zip(axes, df.columns):
+            ax.plot(df[col], df.index)
+            ax.set_title(col, fontsize=9, rotation=0, ha='center')
+            ax.invert_yaxis()  # Invert y-axis to show depth increasing downwards
+            ax.tick_params(axis='both', which='major', labelsize=6) #Tick size
+            ax.tick_params(axis='both', which='minor', labelsize=4) #Tick size
+            ax.set_ylim(df.index.max(), 0) #added this line
+
+        fig.subplots_adjust(wspace=0.1)   # Adjust spacing as needed
+
+
+        # --- Embed Figure in Tkinter ---
+        self.figure_canvas = FigureCanvasTkAgg(fig, master=self.output_frame)  # Use output_frame
+        self.figure_canvas.draw()
+        self.figure_canvas.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH, expand=True) #Changed side to RIGHT
 
     def on_frame_configure(self, event=None):
         """Updates the scroll region of the canvas."""
@@ -947,6 +917,25 @@ class PaleoProfileRandomizer:
                 df = pd.DataFrame(self.data)
                 df.to_excel(file_path, index=False, engine='openpyxl')  # Specify openpyxl
                 messagebox.showinfo("File Saved", f"Data saved to {file_path}")
+        except Exception as e:
+            messagebox.showerror("Error Saving File", f"An error occurred: {e}")
+    
+    def save_diagram(self, filetype):
+        """Saves the current diagram to a file of the specified type (png or svg)."""
+        if not hasattr(self, 'figure_canvas'):
+            messagebox.showinfo("No Diagram", "No diagram to save. Generate a profile first.")
+            return
+
+        try:
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=f".{filetype}",
+                filetypes=[(f"{filetype.upper()} files", f"*.{filetype}"), ("All files", "*.*")],
+                title=f"Save Diagram as {filetype.upper()}"
+            )
+            if file_path:
+                self.figure_canvas.figure.savefig(file_path)  # Save the *figure*
+                messagebox.showinfo("File Saved", f"Diagram saved to {file_path}")
+
         except Exception as e:
             messagebox.showerror("Error Saving File", f"An error occurred: {e}")
 # --- Main Program Execution ---
