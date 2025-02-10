@@ -1,10 +1,10 @@
 # Parameter Generation Trends
 
-This document describes the trends used for generating parameter values in the simulation. These trends control how values change over depth within different zones and environments. It also explains how to tune and refine these trends.
+This document describes the trends used for generating parameter values in a simulation. These trends control how values change over depth or time within different zones and environments. It also explains how to tune and refine these trends, and includes the relevant code snippets.
 
 ## Trend Descriptions and Tuning
 
-The following new trends are available, along with instructions on how to tune their parameters within the `generate_value` function:
+The following trends are available, along with instructions on how to tune their parameters within the `generate_value` function:
 
 *   **`SP` (Sporadic):** 70% chance of the value being 0. 30% chance of a random value between the minimum and maximum.
 
@@ -80,36 +80,41 @@ The following new trends are available, along with instructions on how to tune t
         return max(min_val, min(new_val, max_val)) #Limit the value
     ```
 
-*   **`SL` (StagnantLow):** *First*, the values are stagnant and close to the *minimum* value (very small fluctuation). *Then*, after a midpoint (40-60% of the depth), the values begin to *decrease* gradually towards the minimum.
+*   **`SL` (StagnantLow):** *First*, the values are stagnant and fluctuate around a *randomly chosen point* between `min_val * 1.2` and `max_val * 0.8` (with a small 5% fluctuation). *Then*, after a midpoint (40-60% of the depth), the values begin to *decrease* gradually towards the minimum.
 
     *   `midpoint_ratio`: The range `0.4, 0.6` in the code determines the range for the midpoint (as a percentage of `depth`).
-    *   `stagnant_fluctuation`: Change the divisor in the code to control the fluctuation during the stagnant phase (smaller is less fluctuation).
+    *   `stagnant_fluctuation`: Change the `0.05` in `fluctuation = (max_val - min_val) * 0.05` to control the fluctuation during the stagnant phase.
     *   `decrease_rate`: Modify the `0.5` in the code to adjust how quickly the value decreases after the midpoint.
     *   `min_val`, `max_val`: Set the absolute bounds.
-    *   `param.last_val_sl`: Stores the last value of the previous step.
+    *   `param.stagnant_center_sl`: Stores the randomly chosen center point for the stagnant phase.  This is initialized *once*.
+    *   `param.last_val_sl`: Stores the last value of the previous step, used in the decreasing phase.
 
     ```python
     elif trend == "SL": #StagnantLow: first stagnant, then decreasing
         midpoint_ratio = random.uniform(0.4, 0.6)
         midpoint = depth * midpoint_ratio
         if d <= midpoint:
-            fluctuation = (max_val - min_val) / 40  #Smaller stagnant
-            return round(random.uniform(max(min_val, min_val - fluctuation), min(max_val, min_val + fluctuation)), 2)
+            if not hasattr(param, 'stagnant_center_sl'):
+                param.stagnant_center_sl = random.uniform(min_val * 1.2, max_val * 0.8)
+            fluctuation = (max_val - min_val) * 0.05  # 5% fluctuation
+            return round(random.uniform(max(min_val, param.stagnant_center_sl - fluctuation), min(max_val, param.stagnant_center_sl + fluctuation)), 2)
+
         else:
             if not hasattr(param, 'last_val_sl'):
-                param.last_val_sl = min_val #initialize with the stagnant value
+                param.last_val_sl = param.stagnant_center_sl #initialize with the stagnant value
             normalized_depth = (d - midpoint) / (depth - midpoint) if (depth - midpoint) > 0 else 0
             new_val = round(float(param.last_val_sl - (param.last_val_sl-min_val) * normalized_depth * 0.5 ),2) #slower decreasing
             param.last_val_sl = new_val
             return max(min_val, min(new_val, max_val)) #Limit the value
     ```
 
-*   **`SH` (StagnantHigh):** *First*, the values are stagnant and close to the *maximum* value. *Then*, after a midpoint (40-60% of the depth), the values begin to *increase* gradually towards the maximum.
+*   **`SH` (StagnantHigh):** *First*, the values are stagnant and fluctuate around a *randomly chosen point* between `min_val * 1.2` and `max_val * 0.8` (with a small 5% fluctuation). *Then*, after a midpoint (40-60% of the depth), the values begin to *increase* gradually towards the maximum.
 
     *   `midpoint_ratio`: Same as in `SL`, controls the midpoint.
-    *   `stagnant_fluctuation`: Same as in `SL`, controls the fluctuation during the stagnant phase.
+    *   `stagnant_fluctuation`: Change the `0.05` in `fluctuation = (max_val - min_val) * 0.05` to control the fluctuation during the stagnant phase.
     *   `increase_rate`: Similar to `SL`, but controls the *increase* rate after the midpoint, using the `0.5` factor.
     *   `min_val`, `max_val`: Set the absolute bounds.
+    *   `param.stagnant_center_sh`: Stores the randomly chosen center point for the stagnant phase. This is initialized *once*.
     *   `param.last_val_sh`: Stores the last value of the previous step.
 
     ```python
@@ -117,11 +122,13 @@ The following new trends are available, along with instructions on how to tune t
         midpoint_ratio = random.uniform(0.4, 0.6)
         midpoint = depth * midpoint_ratio
         if d <= midpoint:
-            fluctuation = (max_val - min_val) / 40 #Smaller stagnant
-            return round(random.uniform(max(min_val, max_val - fluctuation), min(max_val, max_val + fluctuation)), 2)
+            if not hasattr(param, 'stagnant_center_sh'):
+                param.stagnant_center_sh = random.uniform(min_val * 1.2, max_val * 0.8)
+            fluctuation = (max_val - min_val) * 0.05
+            return round(random.uniform(max(min_val, param.stagnant_center_sh - fluctuation), min(max_val, param.stagnant_center_sh + fluctuation)), 2)
         else:
             if not hasattr(param, 'last_val_sh'):
-                param.last_val_sh = max_val #initialize with the stagnant value
+                param.last_val_sh = param.stagnant_center_sh #initialize with the stagnant value
             normalized_depth = (d - midpoint) / (depth - midpoint) if (depth - midpoint) > 0 else 0
 
             new_val = round(float(param.last_val_sh + (max_val - param.last_val_sh) * normalized_depth * 0.5),2) #Slower increasing
