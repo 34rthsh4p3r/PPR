@@ -20,7 +20,7 @@ class PaleoProfileRandomizer:
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
