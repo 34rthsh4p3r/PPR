@@ -10,7 +10,7 @@ PPR (Paleo Profile Randomizer) is a Python application designed to generate synt
 
 The application generates data based on user-selected parameters:
 
-*   **Depth:** User-defined depth range (e.g., 0-600 cm) with 2 cm intervals.
+*   **Depth:** User-defined depth range (e.g., 50-700 cm) with 2 cm intervals.
 *   **Zones:** Five distinct zones with randomly assigned percentages (each zone representing 10-60% of the total depth).
 *   **Base Type:** Geological base type (Rock, Sand, Paleosol, or Lake Sediment).
 *   **Environment Type:** Paleoenvironment (Lake, Peatland, or Wetland).
