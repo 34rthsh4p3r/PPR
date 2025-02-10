@@ -20,7 +20,7 @@ The application generates data based on user-selected parameters:
     *   Grain size: Clay, Silt, Sand percentages
     *   Water-soluble geochemical concentrations: Ca, Mg, Na, K
     *   Charcoal abundances
-    *   Pollen abundances: Pinus, Quercus, Betula, Cerealia
+    *   Pollen abundances: Pinus, Quercus, Betula, Cerealia, Poeceae
     *   Algae abundances: Pediastrum
     *   Mollusc abundances: *Pisidium*, *Valvata cristata*, *Vallonia costata*, *Succinea putris*, *Planorbis planorbis*
 
