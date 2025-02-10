@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.font as tkFont #For font customization
 from tkinter import ttk, filedialog, messagebox
 import random
 import os
@@ -14,13 +15,17 @@ class PaleoProfileRandomizer:
     def __init__(self, master):
         self.master = master
         master.title("PPR - Paleo Profile Randomizer")
-        width = master.winfo_screenwidth()
-        height = master.winfo_screenheight()
+        width = 800       # Can be exchanged to: master.winfo_screenwidth()
+        height = 600       # Can be exchanged to: master.winfo_screenheight()
         master.geometry("%dx%d" % (width, height))
+
+        # This will open the window in full-size:
+        # master.state('zoomed')
+        # but you have to remove width, height and master.geometry() lines
 
         # --- Load and Display Icon ---
         try:
-            icon_path = 'C:/Users/varit/Documents/PPR/PPR.ico'  # Replace PATH with your icon file's path if different
+            icon_path = 'PPR.ico'  # Replace PATH with your icon file's path if different
             icon_image = Image.open(icon_path)
             self.icon_photo = ImageTk.PhotoImage(icon_image)
             master.iconphoto(True, self.icon_photo)  
@@ -40,21 +45,21 @@ class PaleoProfileRandomizer:
 
         # --- Button Frame ---
         self.button_frame = tk.Frame(master)
-        self.button_frame.grid(row=2, column=0, columnspan=3, pady=10)
-       
+        self.button_frame.grid(row=2, column=0, columnspan=3, pady=0)
+    
         # --- Generate Profile Button ---
-        self.generate_button = ttk.Button(self.button_frame, text="Generate Profile", command=self.generate_profile)
+        self.generate_button = ttk.Button(self.button_frame, text="Generate Profile",  command=self.generate_profile, style="OpenSans.TButton")
         self.generate_button.pack(side=tk.LEFT, padx=5)
-       
+    
         # --- Save Buttons ---
-        self.save_csv_button = ttk.Button(self.button_frame, text="Save to .csv", command=self.save_data_to_csv)
+        self.save_csv_button = ttk.Button(self.button_frame, text="Save to .csv", command=self.save_data_to_csv, style="OpenSans.TButton")
         self.save_csv_button.pack(side=tk.LEFT, padx=5)
 
-        self.save_xlsx_button = ttk.Button(self.button_frame, text="Save to .xlsx", command=self.save_data_to_xlsx)
+        self.save_xlsx_button = ttk.Button(self.button_frame, text="Save to .xlsx", command=self.save_data_to_xlsx, style="OpenSans.TButton")
         self.save_xlsx_button.pack(side=tk.LEFT, padx=5)
-       
+    
         # --- Exit Button ---
-        self.exit_button = ttk.Button(self.button_frame, text="Exit", command=master.destroy)
+        self.exit_button = ttk.Button(self.button_frame, text="Exit", command=master.destroy, style="OpenSans.TButton")
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
         # --- Output Frame ---
@@ -83,12 +88,12 @@ class PaleoProfileRandomizer:
         # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black")
-        version_label.pack(side=tk.TOP, expand=True)
+        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black", font=("Open Sans", 10, "italic"))
+        version_label.pack(side=tk.TOP, pady=(0,0))  # Reduce padding
 
         # Create a clickable link label for "34rthsh4p3r"
-        link_label = tk.Label(self.bottom_frame, text="34rthsh4p3r", fg="blue", cursor="hand2")
-        link_label.pack(side=tk.TOP)
+        link_label = tk.Label(self.bottom_frame, text="34rthsh4p3r", fg="teal", cursor="hand2", font=("Open Sans", 10, "bold"))
+        link_label.pack(side=tk.TOP, pady=(0,0)) # Reduce padding
         link_label.bind("<Button-1>", lambda e: self.open_url("https://github.com/34rthsh4p3r/PPR"))
 
         # --- Configure Row Weights ---
