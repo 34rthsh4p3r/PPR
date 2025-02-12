@@ -4,6 +4,8 @@
 [![Tkinter](https://img.shields.io/badge/GUI-Tkinter-green.svg)](https://docs.python.org/3/library/tkinter.html)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+![Screenshot](screenshot.png)
+
 ## Project Description
 
 PPR (Paleo Profile Randomizer) is a Python application designed to generate synthetic paleoecological profile data, simulating the information obtained from sediment cores. This tool allows users to explore how different environmental and geological factors influence the composition of sediment records. PPR is valuable for educational purposes, data analysis testing, hypothesis generation, and model development in paleoecology.
@@ -101,12 +103,6 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
     *   `--icon=PPR.ico`: set the icon to the application
 
 3.  **Find the Executable:** The .exe file will be created in the `dist` folder within the project directory.
-
-## Screenshots
-
-![Main Window](main_window.png)
-
-![Table and Diagram](table_diagram.png)
 
 ## Troubleshooting
 
