@@ -104,11 +104,9 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
 
 ## Screenshots
 
-<img src="main_window.png" alt="Project Screenshot" style="max-width: 100%; height: auto;">
-*Main window of PPR, showing the parameter selection options.*
+<img src="main_window.png" alt="Project Screenshot" style="max-width: 60%; height: auto;">
+<img src="table_diagram.png" alt="Project Screenshot" style="max-width: 20%; height: auto;">
 
-<img src="table_diagram.png" alt="Project Screenshot" style="max-width: 60%; height: auto;">
-*Parameter selection options (Depth: 300-400, Base: Paleosol, Environment: Peatland) and the generated table (left) and diagram (right) showing the trends in the data.*
 
 ## Troubleshooting
 
