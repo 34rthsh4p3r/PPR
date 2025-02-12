@@ -113,7 +113,7 @@ class PaleoProfileRandomizer:
         # --- Bottom Frame (for version info) ---
         self.bottom_frame = tk.Frame(master)
         self.bottom_frame.grid(row=4, column=0, columnspan=2, sticky="ew", padx=0, pady=0) #row 4
-        version_label = tk.Label(self.bottom_frame, text="Updated on 10 February 2025",  fg="black", font=("Arial", 10))
+        version_label = tk.Label(self.bottom_frame, text="Updated on 12 February 2025",  fg="black", font=("Arial", 10))
         version_label.pack(side=tk.TOP, pady=(0,0))  # Reduce padding
 
         # Create a clickable link label for "34rthsh4p3r"
@@ -529,18 +529,18 @@ class PaleoProfileRandomizer:
                 }
             elif base_type == "Paleosol":
                 ranges = {
-                    "OM": (15, 35, "LF"),
-                    "IM": (40, 70, "LF"),
-                    "CC": (10, 30, "DN"),
-                    "Clay": (5, 20, "LF"),
-                    "Silt": (5, 15, "LF"),
-                    "Sand": (70, 90, "LF"),
+                    "OM": (0, 30, "LF"),
+                    "IM": (30, 80, "LF"),
+                    "CC": (0, 30, "LF"),
+                    "Clay": (0, 30, "LF"),
+                    "Silt": (0, 30, "LF"),
+                    "Sand": (0, 90, "LF"),
                     "MS": (100, 150, "LF"),
                     "CH": (0, 10, "SP"),
                     "AP": (130, 280, "LF"),
                     "NAP": (10, 90, "LF"),
-                    "WL": (40, 100, "UP"),
-                    "CR": (60, 90, "DN"),
+                    "WL": (40, 100, "LF"),
+                    "CR": (60, 90, "LF"),
                     "Ca": (100, 200, "HF"),
                     "Mg": (100, 130, "HF"),
                     "Na": (100, 200, "LF"),
@@ -863,7 +863,7 @@ class PaleoProfileRandomizer:
             axes = [axes]
 
         for ax, col in zip(axes, df.columns):
-            ax.plot(df[col], df.index)
+            ax.step(df[col], df.index, where='post') # Step plot
             ax.set_title(col, fontsize=9, rotation=0, ha='center')
             ax.invert_yaxis()  # Invert y-axis to show depth increasing downwards
             ax.tick_params(axis='both', which='major', labelsize=6) #Tick size
