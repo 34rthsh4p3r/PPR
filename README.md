@@ -104,8 +104,8 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
 
 ## Screenshots
 
-<img src="main_window.png" alt="Project Screenshot" style="max-width: 60%; height: auto;">
-<img src="table_diagram.png" alt="Project Screenshot" style="max-width: 20%; height: auto;">
+<img src="main_window.png" alt="Project Screenshot" style="max-width: 60%; max-height: 60%;">
+<img src="table_diagram.png" alt="Project Screenshot" style="max-width: 20%; max-height: 40%;">
 
 
 ## Troubleshooting
