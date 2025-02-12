@@ -91,6 +91,14 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
 
 3.  **Find the Executable:** The .exe file will be created in the `dist` folder within the project directory.
 
+## Screenshots
+
+![Main Window](images/main_window.png)
+*Main window of PPR, showing the parameter selection options.*
+
+![Table and Diagram](images/table_diagram.png)
+*Parameter selection options (Depth: 300-400, Base: Paleosol, Environment: Peatland) and the generated table (left) and diagram (right) showing the trends in the data.*
+
 ## Troubleshooting
 
 *   **`FileNotFoundError: [Errno 2] No such file or directory: 'PPR.ico'`:** Ensure `PPR.ico` is in the same directory as `PPR.py` (or the executable).  If using PyInstaller, verify the `--add-data` option.
