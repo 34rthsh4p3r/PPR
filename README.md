@@ -43,9 +43,19 @@ Data generation is not purely random.  Values follow trends (increasing, decreas
 2.  **Libraries:** Install the required libraries using pip:
 
     ```bash
-    pip install tk pillow pandas matplotlib
+    pip install tk pillow pandas matplotlib openpyxl
     ```
     note: if you are on linux you might need to install python3-tk (ubuntu)
+
+    **Explanation of Libraries:**
+
+    *   **`pandas`:** Used for data manipulation and analysis, particularly for creating and working with DataFrames (the table structure used to store and export the generated data).  It simplifies data handling and export to CSV/Excel.
+    *   **`openpyxl`:**  Used specifically for saving data to Excel files (`.xlsx` format). `pandas` uses `openpyxl` as its engine for Excel writing.
+    *   **`matplotlib`:** Used for creating the diagrams (plots) that visualize the generated data.  `matplotlib.backends.backend_tkagg` is used to embed the plots within the Tkinter GUI.
+    *   **`tk` (Tkinter):**  The standard Python interface to the Tk GUI toolkit. It's used to create the application's window, buttons, input fields, table display, and overall graphical user interface.  `tkinter.font` is used for font customization. `ttk`, `filedialog`, and `messagebox` are submodules of `tkinter` providing themed widgets, file dialogs, and message boxes, respectively.
+    *   **`random`:** Used for generating random numbers and choices, which is essential for simulating the variability in paleoecological data.
+    *   **`pillow` (PIL - Python Imaging Library):** Used for handling images. In this application, it's used to load and display the application's icon (`PPR.ico`).
+     * **`os`**: Provides functions for interacting with the operating system, like handling file paths.
 
 ### Installation and Usage
 
@@ -65,8 +75,9 @@ Data generation is not purely random.  Values follow trends (increasing, decreas
 3.  **Using the GUI:**
     *   Select options for Depth, Base Type, and Environment Type using the radio buttons.
     *   Click "Generate Profile".
-    *   View the generated data in the table.
-    *   Click "Save to .csv" to export the data.  You will be prompted for a filename and location.
+    *   View the generated data in the table and as a diagram.
+    *   Click "Save to .csv" or "Save to .xlsx" to export the data.  You will be prompted for a filename and location.
+    *   Click "Save diagram (.png)" or "Save diagram (.svg)" to save the diagram.
     *   Click "Exit" to close the application.
 
 ### Creating a Standalone Executable (Optional)
@@ -93,10 +104,10 @@ You can create a standalone executable (.exe) using PyInstaller, allowing you to
 
 ## Screenshots
 
-![Main Window](images/main_window.png)
+![Main Window](main_window.png)
 *Main window of PPR, showing the parameter selection options.*
 
-![Table and Diagram](images/table_diagram.png)
+![Table and Diagram](table_diagram.png)
 *Parameter selection options (Depth: 300-400, Base: Paleosol, Environment: Peatland) and the generated table (left) and diagram (right) showing the trends in the data.*
 
 ## Troubleshooting
@@ -127,4 +138,4 @@ This project was developed with significant assistance from Google AI Studio (Ge
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](documents/LICENSE) file for details.
