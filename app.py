@@ -1,7 +1,8 @@
 # app.py
 import streamlit as st
-from gui.homepage import render_homepage
-from gui.profile_generation_page import render_profile_generation_page
+from gui.homepage import homepage
+from gui.profile_generation_page import profile_generation_page
+from gui.license_page import license_page
 import os
 
 # Set Streamlit page configuration
