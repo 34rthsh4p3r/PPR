@@ -9,7 +9,6 @@ import os
 st.set_page_config(
     page_title="PPR - Paleo Profile Randomizer",
     page_icon="PPR.ico",
-    layout="wide"
     initial_sidebar_state="expanded"
     )
 
