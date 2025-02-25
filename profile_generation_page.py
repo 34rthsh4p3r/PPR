@@ -1,11 +1,11 @@
 # gui/profile_generation_page.py
 import streamlit as st
-from logic.profile_generator import ProfileGenerator
+from profile_generator import ProfileGenerator
 import pandas as pd
 import matplotlib.pyplot as plt
 import io  # Import io
 
-def profile_generation_page():
+def render_profile_generation_page():
     st.title("Profile Generation")
 
     profile_generator = ProfileGenerator()
