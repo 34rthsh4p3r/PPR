@@ -66,49 +66,6 @@ Data generation is not purely random. Values follow trends (increasing, decreasi
 *   **Model Development:** Adapt algorithms for complex models.
 *   **Demonstration and Presentation:** Create visualizations of data.
 """)
-
-
-    st.markdown("---")
-    st.subheader("Getting Started")
-    st.markdown("""
-1.  **Prerequisites:**
-    *   Python 3.7+
-    *   Install required libraries: `pip install pandas matplotlib openpyxl`
-    *   Note: If you are on Linux, you might need to install `python3-tk` (Ubuntu).
-
-2.  **Running the Application:**
-    *   This application is designed for Streamlit.
-    *   Clone/download the repository:
-        ```bash
-        git clone https://github.com/YOUR_USERNAME/PPR.git  # Replace YOUR_USERNAME
-        cd PPR
-        ```
-    *   Run: `streamlit run your_app_file.py` (replace `your_app_file.py`).
-
-3. **Usage Instructions:**
-    *   Use the sidebar to select parameters (Depth, Base Type, Environment Type).
-    *   Click "Generate Profile".
-    *   View the data in the table and chart.
-    *   Use "Download Data" to save as CSV or Excel.
-    *  Use the "Download Diagram" buttons to save the generated Diagrams.
-    """)
-    st.markdown("---")
-    st.subheader("Explanation of Libraries")
-    st.markdown("""
-    *   **`pandas`:** Data manipulation and analysis (DataFrames).
-    *   **`openpyxl`:** Saving data to Excel files.
-    *   **`matplotlib`:** Creating diagrams (Streamlit uses its own plotting, but this is used in the original code).
-    *   **`random`:** Generating random numbers for simulation.
-    *   **`os`**: Interacting with the operating system (file paths).
-        """)
-
-    st.markdown("---")
-    st.subheader("Troubleshooting")
-    st.markdown("""
-*   **`ModuleNotFoundError`:** Install missing libraries: `pip install <module_name>`.
-*   For other issues, [open an issue](https://github.com/34rthsh4p3r/PPR/issues).
-""")
-
     st.markdown("---")
     st.subheader("Contributing")
     st.markdown("""
@@ -152,7 +109,7 @@ def main():
     if current_page == "Home":
         home_page()  # Correctly call the home_page function
     elif current_page == "Profile Generation":
-        profile_generation_page.main()  # Call the main() function *within* the module
+        profile_generation_page()  # Call the main() function *within* the module
 
 if __name__ == "__main__":
     main()
