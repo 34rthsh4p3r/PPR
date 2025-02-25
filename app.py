@@ -136,7 +136,7 @@ Contributions are welcome! Fork the repository, create a branch, make changes, a
         """
         <hr>
         <div style="text-align: center; font-size: 0.9em;">
-            © 2025 [34rtsh4p3r]
+            2025 [34rtsh4p3r]
         </div>
         """,
         unsafe_allow_html=True
@@ -162,9 +162,9 @@ def main():
     if current_page == "Home":
         home_page()
     elif current_page == "Profile Generation":
-        profile_generation_page.main()
+        profile_generation_page()
     elif current_page == "License":
-        license_page.main()
+        license_page()
 
 if __name__ == "__main__":
     main()
