@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io  # Import io
 
-def render_profile_generation_page():
+def profile_generation_page():
     st.title("Profile Generation")
 
     profile_generator = ProfileGenerator()
