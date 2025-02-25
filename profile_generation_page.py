@@ -123,3 +123,6 @@ def profile_generation_page():
         if st.sidebar.button("Apply Custom Ranges"):
             profile_generator.custom_ranges[(selected_zone, selected_base_type, selected_env_type)] = updated_ranges # Pass base/env
             st.sidebar.success("Custom ranges applied!")
+ 
+if __name__ == "__main__":  # This is important for local testing
+    profile_generation_page()

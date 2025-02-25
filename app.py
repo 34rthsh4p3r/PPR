@@ -136,14 +136,15 @@ Contributions are welcome! Fork the repository, create a branch, make changes, a
         """
         <hr>
         <div style="text-align: center; font-size: 0.9em;">
-            2025 [34rtsh4p3r]
+            2025 [34rtsh4p3r](https://github.com/34rthsh4p3r)
         </div>
         """,
         unsafe_allow_html=True
     )
 
 def main():
-    
+    """Main function to handle page navigation."""
+
     # Initialize session state for tracking current page
     if "current_page" not in st.session_state:
         st.session_state["current_page"] = "Home"
@@ -160,11 +161,11 @@ def main():
     current_page = st.session_state["current_page"]
 
     if current_page == "Home":
-        home_page()
+        home_page()  # Correctly call the home_page function
     elif current_page == "Profile Generation":
-        profile_generation_page()
+        profile_generation_page.main()  # Call the main() function *within* the module
     elif current_page == "License":
-        license_page()
+        license_page.main()  # Call the main() function *within* the module
 
 if __name__ == "__main__":
     main()

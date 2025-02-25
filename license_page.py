@@ -700,3 +700,6 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
     """)
+
+    if __name__ == "__main__":  # This is important for local testing
+        license_page()
