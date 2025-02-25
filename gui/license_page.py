@@ -2,7 +2,7 @@
 import streamlit as st
 import os
 
-def render_license_page():
+def license_page():
     st.title("License")
 
     # Define the path to the LICENSE file
