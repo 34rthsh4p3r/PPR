@@ -1,7 +1,6 @@
 # app.py
 import streamlit as st
 import profile_generation_page
-import license_page
 import os
 
 # Set Streamlit page configuration
@@ -132,15 +131,7 @@ Contributions are welcome! Fork the repository, create a branch, make changes, a
 
 
     # Footer (remains the same)
-    st.markdown(
-        """
-        <hr>
-        <div style="text-align: center; font-size: 0.9em;">
-            2025 [34rtsh4p3r](https://github.com/34rthsh4p3r)
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("---")
 
 def main():
     """Main function to handle page navigation."""
@@ -154,8 +145,6 @@ def main():
         st.session_state["current_page"] = "Home"
     if st.sidebar.button("Profile Generation"):
         st.session_state["current_page"] = "Profile Generation"
-    if st.sidebar.button("License"):
-        st.session_state["current_page"] = "License"
 
     # Route to the selected page
     current_page = st.session_state["current_page"]
@@ -164,8 +153,6 @@ def main():
         home_page()  # Correctly call the home_page function
     elif current_page == "Profile Generation":
         profile_generation_page.main()  # Call the main() function *within* the module
-    elif current_page == "License":
-        license_page.main()  # Call the main() function *within* the module
 
 if __name__ == "__main__":
     main()
