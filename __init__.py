@@ -1,4 +1,4 @@
-# gui/__init__.py
+# __init__.py
 # This file can be empty.
 # It is used to tell Python that this directory should be treated as a package.
 # This allows us to import modules from this directory in other files.

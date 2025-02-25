@@ -1,7 +1,9 @@
-# logic/profile_generator.py
+# profile_generator.py
 import random
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')  # Use Agg backend to save plots
 
 class ProfileGenerator:
     def __init__(self):
@@ -586,4 +588,4 @@ class ProfileGenerator:
             ax.set_ylim(df.index.max(), 0)
 
         fig.subplots_adjust(wspace=0.1)
-        return fig
+        return fig  # Correctly return the figure object

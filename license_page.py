@@ -1,4 +1,4 @@
-# gui/license_page.py
+# license_page.py
 import streamlit as st
 import os
 

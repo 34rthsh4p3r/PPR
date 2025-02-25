@@ -1,4 +1,4 @@
-# gui/homepage.py
+# homepage.py
 import streamlit as st
 import os
 

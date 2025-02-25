@@ -1,4 +1,4 @@
-# gui/profile_generation_page.py
+# profile_generation_page.py
 import streamlit as st
 from profile_generator import ProfileGenerator
 import pandas as pd
