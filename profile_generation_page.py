@@ -121,12 +121,33 @@ def profile_generation_page():
                 f"{label} (Zone {selected_zone})",
                 0, 100, (int(min_val), int(max_val)), step=1
             )
-        else:
+        elif param == "MS":
             new_min, new_max = st.sidebar.slider(
                 f"{label} (Zone {selected_zone})",
-                0, 2000, (int(min_val), int(max_val)), step=1
+                0, 1000, (int(min_val), int(max_val)), step=1
             )
-        updated_ranges[param] = (new_min, new_max, selected_trend) # Use selected trend
+        elif param in ["AP", "NAP", "WL", "CR"]:
+             new_min, new_max = st.sidebar.slider(
+                f"{label} (Zone {selected_zone})",
+                0, 3000, (int(min_val), int(max_val)), step=1
+            )
+        elif param in ["Ca", "Mg", "Na", "K"]:
+            new_min, new_max = st.sidebar.slider(
+                f"{label} (Zone {selected_zone})",
+                0, 4000, (int(min_val), int(max_val)), step=1
+            )
+        else: # Fallback (shouldn't be needed, but good practice)
+            new_min, new_max = st.sidebar.slider(
+                f"{label} (Zone {selected_zone})",
+                0, 100, (int(min_val), int(max_val)), step=1
+            )
+
+
+        updated_ranges[param] = (new_min, new_max, selected_trend)
+
+        # Add separators
+        if param in ["IM", "Sand", "NAP", "CR"]:
+            st.sidebar.markdown("---")
 
     if st.sidebar.button("Generate Profile"): # Changed label
         profile_generator.custom_ranges[(selected_zone, base_type, env_type)] = updated_ranges
