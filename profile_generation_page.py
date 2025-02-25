@@ -3,49 +3,17 @@ import streamlit as st
 from profile_generator import ProfileGenerator
 import pandas as pd
 import matplotlib.pyplot as plt
-import io  # Import io
+import io
 
 def profile_generation_page():
     st.title("Profile Generation")
 
     profile_generator = ProfileGenerator()
 
-    # --- Sidebar for Input ---
-    st.sidebar.header("Input Parameters")
+    # --- Sidebar for Input ---  (Removed input parameters section)
+    # --- Generate Profile Button --- (Removed Generate Profile button)
 
-    # Depth Selection
-    depth_choice = st.sidebar.selectbox("Choose a depth:",
-                                        options=[("50-100", 1), ("100-200", 2), ("200-300", 3),
-                                                 ("300-400", 4), ("500-600", 5), ("600-700", 6)],
-                                        format_func=lambda x: x[0])  # Display text, return value
-
-
-    # Base Type Selection
-    base_type = st.sidebar.selectbox("Choose a base type:",
-                                        options=["Rock", "Sand", "Paleosol", "Lake sediment"])
-
-    # Environment Type Selection
-    env_type = st.sidebar.selectbox("Choose an environment type:",
-                                        options=["Lake", "Peatland", "Wetland"])
-    
-    # --- Generate Profile Button ---
-    if st.sidebar.button("Generate Profile"):
-        with st.spinner("Generating profile..."):
-            data = profile_generator.generate_profile(depth_choice[1], base_type, env_type) # Use the numeric value.  VERY IMPORTANT!
-            if data:
-                st.session_state.data = data  # Store data in session state
-                df = pd.DataFrame(data)
-                st.dataframe(df.style.format("{:.2f}"))  # Format to 2 decimal places
-
-
-                # --- Display Diagram ---
-                fig = profile_generator.generate_diagram(data)
-                st.pyplot(fig)
-            else:
-                st.warning("No data generated. Please check your input parameters.")
-
-
-    # --- Save Data ---
+    # --- Save Data --- (No Changes)
     if 'data' in st.session_state and st.session_state.data:
         st.sidebar.header("Save Data")
         df_download = pd.DataFrame(st.session_state.data)
@@ -97,32 +65,84 @@ def profile_generation_page():
                     file_name="paleo_profile_diagram.svg",
                     mime="image/svg+xml",
                 )
-            
-    # --- Advanced Parameter Adjustment (Sliders) ---
-    st.sidebar.header("Advanced Parameter Adjustment")
-    if st.sidebar.checkbox("Enable Advanced Adjustment"):
-        selected_zone = st.sidebar.selectbox("Select Zone:", options=profile_generator.zones) #Using all zones for simplicity
-        selected_base_type = st.sidebar.selectbox("Select Base Type (for Zone 5):", options=["Rock", "Sand", "Paleosol", "Lake sediment"], key="base_type_select") #Added key
-        selected_env_type = st.sidebar.selectbox("Select Env. Type (for Zones 1-4):", options=["Lake", "Peatland", "Wetland"], key = "env_type_select") #Added key
-        ranges = profile_generator.get_parameter_ranges(selected_base_type, selected_env_type, selected_zone)
 
-        updated_ranges = {}
-        for param, (min_val, max_val, trend) in ranges.items():
-            if param in ["OM", "IM", "CC", "Clay", "Silt", "Sand"]:
-                new_min, new_max = st.sidebar.slider(
-                    f"{param} Range (Zone {selected_zone}, Trend: {trend})",
-                    0, 100, (int(min_val), int(max_val)), step=1
-                )
+    # --- Advanced Parameter Adjustment (Sliders) --- (Now the main profile generator)
+    st.sidebar.header("Profile Generating Method")
+    # if st.sidebar.checkbox("Enable Advanced Adjustment", value=True):  # Always enabled
+
+    # Depth Selection
+    depth_choice = st.sidebar.selectbox("Choose a depth:",
+                                        options=[("50-100", 1), ("100-200", 2), ("200-300", 3),
+                                                 ("300-400", 4), ("500-600", 5), ("600-700", 6)],
+                                        format_func=lambda x: x[0])  # Display text, return value
+
+    # Base Type Selection
+    base_type = st.sidebar.selectbox("Choose a base type:",
+                                      options=["Rock", "Sand", "Paleosol", "Lake sediment"])
+
+    # Environment Type Selection
+    env_type = st.sidebar.selectbox("Choose an environment type:",
+                                     options=["Lake", "Peatland", "Wetland"])
+
+    selected_zone = st.sidebar.selectbox("Select Zone:", options=profile_generator.zones)
+    # selected_base_type = st.sidebar.selectbox("Select Base Type (for Zone 5):", options=["Rock", "Sand", "Paleosol", "Lake sediment"], key="base_type_select")
+    # selected_env_type = st.sidebar.selectbox("Select Env. Type (for Zones 1-4):", options=["Lake", "Peatland", "Wetland"], key = "env_type_select")
+    ranges = profile_generator.get_parameter_ranges(base_type, env_type, selected_zone)
+
+    updated_ranges = {}
+    for param, (min_val, max_val, trend) in ranges.items():
+        # Create a label based on the parameter
+        if param == "OM":
+            label = "Organic Matter Content Range"
+        elif param == "CC":
+            label = "Carbonate Content Range"
+        elif param == "IM":
+            label = "Inorganic Matter Content Range"
+        elif param == "MS":
+            label = "Magnetic Susceptibility Range"
+        elif param == "WL":
+            label = "Warm-loving mollusc species Range"
+        elif param == "CR":
+            label = "Cold-resistant mollusc species Range"
+        elif param == "AP":
+            label = "Arboreal Pollen Range"
+        elif param == "NAP":
+            label = "Non-arboreal Pollen Range"
+        else:
+            label = f"{param} Range"
+
+
+        trend_options = ["UP", "DN", "LF", "HF", "SP", "SL", "SH", "UD", "DU", "RM"]  # All trend options
+        selected_trend = st.sidebar.selectbox(f"Trend for {label} (Zone {selected_zone})", options=trend_options, index=trend_options.index(trend))
+
+
+        if param in ["OM", "IM", "CC", "Clay", "Silt", "Sand"]:
+            new_min, new_max = st.sidebar.slider(
+                f"{label} (Zone {selected_zone})",
+                0, 100, (int(min_val), int(max_val)), step=1
+            )
+        else:
+            new_min, new_max = st.sidebar.slider(
+                f"{label} (Zone {selected_zone})",
+                0, 2000, (int(min_val), int(max_val)), step=1
+            )
+        updated_ranges[param] = (new_min, new_max, selected_trend) # Use selected trend
+
+    if st.sidebar.button("Generate Profile"): # Changed label
+        profile_generator.custom_ranges[(selected_zone, base_type, env_type)] = updated_ranges
+        with st.spinner("Generating profile..."):
+            data = profile_generator.generate_profile(depth_choice[1], base_type, env_type) # Use the numeric value.  VERY IMPORTANT!
+            if data:
+                st.session_state.data = data  # Store data in session state
+                df = pd.DataFrame(data)
+                st.dataframe(df.style.format("{:.2f}"))  # Format to 2 decimal places
+
+
+                # --- Display Diagram ---
+                fig = profile_generator.generate_diagram(data)
+                st.pyplot(fig)
             else:
-                new_min, new_max = st.sidebar.slider(
-                    f"{param} Range (Zone {selected_zone}, Trend: {trend})",
-                    0, 9999, (int(min_val), int(max_val)), step=1
-                )
-            updated_ranges[param] = (new_min, new_max, trend) #Keep trend
+                st.warning("No data generated. Please check your input parameters.")
 
-        if st.sidebar.button("Apply Custom Ranges"):
-            profile_generator.custom_ranges[(selected_zone, selected_base_type, selected_env_type)] = updated_ranges # Pass base/env
-            st.sidebar.success("Custom ranges applied!")
- 
-if __name__ == "__main__":  # This is important for local testing
+if __name__ == "__main__":
     profile_generation_page()
