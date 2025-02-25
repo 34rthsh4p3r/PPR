@@ -160,7 +160,7 @@ def main():
     current_page = st.session_state["current_page"]
 
     if current_page == "Home":
-        homepage.main()
+        home_page.main()
     elif current_page == "Profile Generation":
         profile_generation_page.main()
     elif current_page == "License":
