@@ -513,9 +513,9 @@ class PaleoProfileRandomizer:
                     "OM": (0, 0, "LF"),
                     "IM": (70, 95, "LF"),
                     "CC": (5, 20, "LF"),
-                    "Clay": (0, 5, "LF"),
-                    "Silt": (0, 10, "LF"),
-                    "Sand": (85, 95, "LF"),
+                    "Clay": (0, 5, "UP"),
+                    "Silt": (0, 10, "UP"),
+                    "Sand": (85, 95, "UP"),
                     "MS": (150, 200, "LF"),
                     "CH": (0, 0, "SP"),
                     "AP": (20, 60, "LF"),
@@ -548,8 +548,8 @@ class PaleoProfileRandomizer:
                 }
             elif base_type == "Lake sediment":
                 ranges = {
-                    "OM": (5, 15, "LF"),
-                    "IM": (40, 80, "LF"),
+                    "OM": (5, 20, "LF"),
+                    "IM": (40, 90, "LF"),
                     "CC": (5, 30, "LF"),
                     "Clay": (10, 20, "LF"),
                     "Silt": (10, 60, "LF"),
@@ -570,14 +570,14 @@ class PaleoProfileRandomizer:
             if env_type == "Lake":
                 ranges.update({
                     "OM": (5, 20, "LF"),
-                    "IM": (40, 80, "HF"),
+                    "IM": (40, 80, "LF"),
                     "CC": (5, 35, "LF"),
                     "Clay": (10, 20, "LF"),
                     "Silt": (10, 60, "LF"),
-                    "Sand": (20, 40, "DN"),
+                    "Sand": (20, 40, "LF"),
                     "MS": (100, 150, "LF"),
                     "CH": (0, 0, "SP"),
-                    "AP": (100, 160, "DN"),
+                    "AP": (100, 160, "LF"),
                     "NAP": (20, 40, "HF"),
                     "WL": (20, 50, "HF"),
                     "CR": (115, 250, "LF"),
@@ -588,14 +588,14 @@ class PaleoProfileRandomizer:
                 })
             elif env_type == "Peatland":
                 ranges.update({
-                    "OM": (2, 25, "HF"),
-                    "IM": (40, 80, "LF"),
-                    "CC": (5, 30, "DN"),
-                    "Clay": (10, 20, "HF"),
-                    "Silt": (10, 60, "LF"),
-                    "Sand": (20, 40, "DN"),
+                    "OM": (30, 60, "UP"),
+                    "IM": (40, 80, "UP"),
+                    "CC": (5, 10, "UP"),
+                    "Clay": (10, 20, "UP"),
+                    "Silt": (10, 60, "UP"),
+                    "Sand": (20, 40, "UP"),
                     "MS": (100, 150, "LF"),
-                    "CH": (0, 12, "SP"),
+                    "CH": (0, 8, "SP"),
                     "AP": (45, 199, "LF"),
                     "NAP": (40, 80, "HF"),
                     "WL": (40, 140, "HF"),
@@ -607,10 +607,10 @@ class PaleoProfileRandomizer:
                 })
             elif env_type == "Wetland":
                 ranges.update({
-                    "OM": (5, 20, "HF"),
-                    "IM": (40, 80, "LF"),
-                    "CC": (5, 30, "DN"),
-                    "Clay": (10, 20, "HF"),
+                    "OM": (5, 30, "LF"),
+                    "IM": (40, 90, "LF"),
+                    "CC": (5, 30, "LF"),
+                    "Clay": (10, 20, "LF"),
                     "Silt": (10, 60, "LF"),
                     "Sand": (20, 40, "LF"),
                     "MS": (100, 150, "LF"),
@@ -628,9 +628,9 @@ class PaleoProfileRandomizer:
         elif zone_num == 3:
             if env_type == "Lake":
                 ranges.update({
-                    "OM": (9, 18, "HF"),
-                    "IM": (40, 80, "HF"),
-                    "CC": (5, 30, "HF"),
+                    "OM": (9, 18, "LF"),
+                    "IM": (40, 90, "LF"),
+                    "CC": (5, 30, "LF"),
                     "Clay": (5, 40, "LF"),
                     "Silt": (5, 60, "LF"),
                     "Sand": (5, 60, "LF"),
@@ -647,12 +647,12 @@ class PaleoProfileRandomizer:
                 })
             elif env_type == "Peatland":
               ranges.update({
-                "OM": (30, 60, "HF"),
-                "IM": (20, 60, "LF"),
-                "CC": (5, 30, "LF"),
-                "Clay": (5, 40, "HF"),
-                "Silt": (5, 60, "LF"),
-                "Sand": (5, 40, "LF"),
+                "OM": (30, 60, "UP"),
+                "IM": (20, 60, "UP"),
+                "CC": (5, 30, "UP"),
+                "Clay": (5, 40, "UP"),
+                "Silt": (5, 60, "UP"),
+                "Sand": (5, 40, "UP"),
                 "MS": (50, 100, "LF"),
                 "CH": (0, 5, "SP"),
                 "AP": (45, 199, "LF"),
@@ -667,8 +667,8 @@ class PaleoProfileRandomizer:
             elif env_type == "Wetland":
                 ranges.update({
                     "OM": (10, 30, "LF"),
-                    "IM": (30, 70, "HF"),
-                    "CC": (20, 40, "HF"),
+                    "IM": (30, 70, "LF"),
+                    "CC": (20, 40, "LF"),
                     "Clay": (10, 40, "LF"),
                     "Silt": (20, 60, "LF"),
                     "Sand": (10, 50, "LF"),
@@ -709,9 +709,9 @@ class PaleoProfileRandomizer:
                 "OM": (80, 99, "RM"),
                 "IM": (1, 10, "HF"),
                 "CC": (1, 5, "HF"),
-                "Clay": (20, 60, "HF"),
-                "Silt": (20, 60, "LF"),
-                "Sand": (1, 5, "LF"),
+                "Clay": (20, 60, "UP"),
+                "Silt": (20, 60, "UP"),
+                "Sand": (1, 5, "UP"),
                 "MS": (20, 40, "LF"),
                 "CH": (0, 0, "SP"),
                 "AP": (45, 80, "LF"),
