@@ -1,6 +1,5 @@
 # license_page.py
 import streamlit as st
-import os
 
 def license_page():
     """Displays the GNU General Public License v3 in a Streamlit app."""
